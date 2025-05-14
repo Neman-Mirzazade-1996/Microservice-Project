@@ -1,5 +1,5 @@
 FROM openjdk
-RUN echo "order-ms"
+RUN echo "Product-ms"
 COPY ./build/libs/Order-ms-0.1.jar /app/
 WORKDIR /app/
 

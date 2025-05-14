@@ -27,6 +27,36 @@ services:
     networks:
       - app-network
 
+  product-db:
+    image: mysql:8.0
+    container_name: product-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: product_db
+      MYSQL_USER: product
+      MYSQL_PASSWORD: password
+    ports:
+      - "3309:3306"
+    networks:
+      - app-network
+
+
+
+  user-service:
+    build: ./User-ms
+    container_name: user-service
+    ports:
+      - "8095:8095"
+    depends_on:
+      - user-db
+    environment:
+      DB_CONNECTION_IP: user-db
+      DB_CONNECTION_PORT: 3306
+      DB_CONNECTION_USERNAME: user
+      DB_CONNECTION_PASSWORD: password
+    networks:
+      - app-network
+
   order-service:
     build: ./Order-ms
     container_name: order-service
@@ -42,17 +72,17 @@ services:
     networks:
       - app-network
 
-  user-service:
-    build: ./User-ms
-    container_name: user-service
+  product-service:
+    build: ./Product-ms
+    container_name: product-service
     ports:
-      - "8095:8095"
+      - "8097:8097"
     depends_on:
-      - user-db
+      - product-db
     environment:
-      DB_CONNECTION_IP: user-db
+      DB_CONNECTION_IP: product-db
       DB_CONNECTION_PORT: 3306
-      DB_CONNECTION_USERNAME: user
+      DB_CONNECTION_USERNAME: product
       DB_CONNECTION_PASSWORD: password
     networks:
       - app-network
