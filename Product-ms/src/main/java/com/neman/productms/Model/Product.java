@@ -3,6 +3,8 @@ package com.neman.productms.Model;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Data
 @AllArgsConstructor
@@ -34,8 +36,10 @@ public class Product {
     String status;
     @Column(nullable = false)
     String imageUrl;
+    @CreationTimestamp
     @Column(nullable = false, updatable = false)
     String createdAt;
+    @UpdateTimestamp
     @Column(nullable = false, insertable = false)
     String updatedAt;
 }

@@ -3,6 +3,8 @@ package com.neman.productms.Service.ServiceImpl;
 import com.neman.productms.Dto.ProductRequestDto;
 import com.neman.productms.Dto.ProductResponseDto;
 import com.neman.productms.Dto.ProductUpdateDto;
+import com.neman.productms.Exception.ProductAlreadyExistException;
+import com.neman.productms.Exception.ProductNotFoundException;
 import com.neman.productms.Mapper.ProductMapper;
 import com.neman.productms.Model.Product;
 import com.neman.productms.Repository.ProductRepository;
@@ -10,7 +12,6 @@ import com.neman.productms.Service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service
@@ -23,7 +24,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductResponseDto createProduct(ProductRequestDto dto) {
         if (productRepository.existsBySku(dto.getSku())) {
-            throw new RuntimeException("Product with SKU " + dto.getSku() + " already exists");
+            throw new ProductAlreadyExistException("Product with SKU " + dto.getSku() + " already exists");
         }
         Product product = Product.builder()
                 .name(dto.getName())
@@ -32,7 +33,7 @@ public class ProductServiceImpl implements ProductService {
                 .brand(dto.getBrand())
                 .sku(dto.getSku())
                 .price(dto.getPrice())
-                .stockQuantity(0)
+                .stockQuantity(1)
                 .status(dto.getStatus())
                 .imageUrl(dto.getImageUrl())
                 .build();
@@ -42,7 +43,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductResponseDto updateProduct(Long id, ProductUpdateDto dto) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
         product.setName(dto.getName());
         product.setDescription(dto.getDescription());
         product.setCategory(dto.getCategory());
@@ -57,14 +58,14 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void deleteProduct(Long id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
         productRepository.delete(product);
     }
 
     @Override
     public ProductResponseDto getProductById(Long id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
         return productMapper.toDto(product);
     }
 
@@ -76,11 +77,21 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void increaseStock(Long productId, int quantity) {
-
+        Product product=productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
+        product.setStockQuantity(product.getStockQuantity() + quantity);
+        productMapper.toDto(productRepository.save(product));
     }
 
     @Override
     public void decreaseStock(Long productId, int quantity) {
-
+        Product product=productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
+        if (product.getStockQuantity() < quantity) {
+            throw new RuntimeException("Not enough stock");
+        }
+        product.setStockQuantity(product.getStockQuantity() - quantity);
+        productMapper.toDto(productRepository.save(product));
     }
+
 }

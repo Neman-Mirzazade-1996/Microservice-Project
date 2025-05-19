@@ -39,4 +39,14 @@ public class ProductController {
     public List<ProductResponseDto> getAllProducts() {
         return productService.getAllProducts();
     }
+
+    @PostMapping("/increaseStock/{productId}/{quantity}")
+    public void increaseStock(@PathVariable Long productId, @PathVariable int quantity) {
+        productService.increaseStock(productId, quantity);
+    }
+
+    @PostMapping("/decreaseStock/{productId}/{quantity}")
+    public void decreaseStock(@PathVariable Long productId, @PathVariable int quantity) {
+        productService.decreaseStock(productId, quantity);
+    }
 }

@@ -2,6 +2,8 @@ package com.neman.userms.Service.ServiceImpl;
 
 import com.neman.userms.Dto.UserRequestDto;
 import com.neman.userms.Dto.UserResponseDto;
+import com.neman.userms.Exception.UserAlreadyExistException;
+import com.neman.userms.Exception.UserNotFoundException;
 import com.neman.userms.Mapper.UserMapper;
 import com.neman.userms.Model.User;
 import com.neman.userms.Repository.UserRepository;
@@ -24,7 +26,7 @@ public class UserServiceImpl implements UserService {
         User user= userMapper.toEntity(userRequestDto);
         if (userRepository.findByEmail(userRequestDto.getEmail()) != null) {
             log.error("User with email {} already exists", user.getEmail());
-            throw new RuntimeException("User with email " + user.getEmail() + " already exists");
+            throw new UserAlreadyExistException("User with email " + user.getEmail() + " already exists");
         }
         if (userRepository.findByUsername(userRequestDto.getUsername()) != null) {
             log.error("User with username {} already exists", user.getUsername());
@@ -51,7 +53,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDto getUserById(Long id) {
-        User user=userRepository.findById(id).orElseThrow(()->new RuntimeException("User not found with given id: "+id));
+        User user=userRepository.findById(id).orElseThrow(()->new UserNotFoundException("User not found with given id: "+id));
         return userMapper.toResponseDto(user);
 
     }
