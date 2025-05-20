@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="FrameworkDetectionExcludesConfiguration">
-    <file type="web" url="file://$PROJECT_DIR$/Order-ms" />
-    <file type="web" url="file://$PROJECT_DIR$/Product-ms" />
-    <file type="web" url="file://$PROJECT_DIR$/User-ms" />
+    <file type="web" url="file://$PROJECT_DIR$" />
   </component>
   <component name="ProjectRootManager">
     <output url="file://$PROJECT_DIR$/out" />
