@@ -11,6 +11,14 @@ import lombok.experimental.FieldDefaults;
 public class ProductResponseDto {
     Long id;
     String name;
+    String description;
+    String category;
+    String brand;
+    String sku;
     Double price;
     Integer stockQuantity;
+    String status;
+    String imageUrl;
+    String createdAt;
+    String updatedAt;
 }

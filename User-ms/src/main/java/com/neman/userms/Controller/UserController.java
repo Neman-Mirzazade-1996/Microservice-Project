@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/user")
+@RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
@@ -18,7 +18,7 @@ public class UserController {
         return userService.createUser(userRequestDto);
     }
 
-    @GetMapping("/getUser/{id}")
+    @GetMapping("getUser/{id}")
     public UserResponseDto getUserById(@PathVariable Long id) {
         return userService.getUserById(id);
     }

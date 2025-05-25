@@ -13,6 +13,11 @@ services:
       - "3307:3306"
     networks:
       - app-network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "user", "-ppassword" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   order-db:
     image: mysql:8.0
@@ -26,6 +31,11 @@ services:
       - "3308:3306"
     networks:
       - app-network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "order", "-ppassword" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   product-db:
     image: mysql:8.0
@@ -39,6 +49,11 @@ services:
       - "3309:3306"
     networks:
       - app-network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "product", "-ppassword" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 
 
@@ -48,7 +63,8 @@ services:
     ports:
       - "8095:8095"
     depends_on:
-      - user-db
+      user-db:
+        condition: service_healthy
     environment:
       DB_CONNECTION_IP: user-db
       DB_CONNECTION_PORT: 3306
@@ -56,6 +72,11 @@ services:
       DB_CONNECTION_PASSWORD: password
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8095/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   order-service:
     build: ./Order-ms
@@ -63,7 +84,8 @@ services:
     ports:
       - "8096:8096"
     depends_on:
-      - order-db
+      order-db:
+        condition: service_healthy
     environment:
       DB_CONNECTION_IP: order-db
       DB_CONNECTION_PORT: 3306
@@ -71,6 +93,11 @@ services:
       DB_CONNECTION_PASSWORD: password
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8096/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   product-service:
     build: ./Product-ms
@@ -78,7 +105,8 @@ services:
     ports:
       - "8097:8097"
     depends_on:
-      - product-db
+      product-db:
+        condition: service_healthy
     environment:
       DB_CONNECTION_IP: product-db
       DB_CONNECTION_PORT: 3306
@@ -86,6 +114,11 @@ services:
       DB_CONNECTION_PASSWORD: password
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8097/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
 networks:
   app-network:

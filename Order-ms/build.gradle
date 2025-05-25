@@ -48,6 +48,9 @@ dependencies {
     // feign-client
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
+    // Spring Boot Actuator
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
 }
 
 dependencyManagement {

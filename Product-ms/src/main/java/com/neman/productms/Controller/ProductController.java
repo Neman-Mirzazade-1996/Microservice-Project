@@ -6,7 +6,6 @@ import com.neman.productms.Dto.ProductUpdateDto;
 import com.neman.productms.Service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -14,6 +13,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductController {
     private final ProductService productService;
+    @GetMapping("/get/{id}")
+    public ProductResponseDto getProduct(@PathVariable Long id) {
+        return productService.getProductById(id);
+    }
 
     @PostMapping("/create")
     public ProductResponseDto createProduct(@RequestBody ProductRequestDto dto) {
@@ -30,10 +33,7 @@ public class ProductController {
         productService.deleteProduct(id);
     }
 
-    @GetMapping("/get/{id}")
-    public ProductResponseDto getProduct(@PathVariable Long id) {
-        return productService.getProductById(id);
-    }
+
 
     @GetMapping("/getAll")
     public List<ProductResponseDto> getAllProducts() {
