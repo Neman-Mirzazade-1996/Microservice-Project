@@ -1,13 +1,15 @@
 package com.neman.orderms.Service.ServiceImpl;
 
 import com.neman.orderms.Client.ProductClient;
+import com.neman.orderms.Client.UserClient;
 import com.neman.orderms.Dto.OrderRequestDto;
 import com.neman.orderms.Dto.OrderResponseDto;
 import com.neman.orderms.Dto.ProductResponseDto;
+import com.neman.orderms.Dto.UserResponseDto;
 import com.neman.orderms.Exception.InsufficientStockException;
 import com.neman.orderms.Exception.OrderNotFoundException;
 import com.neman.orderms.Mapper.OrderMapper;
-import com.neman.orderms.Model.Order;
+import com.neman.orderms.Model.Orders;
 import com.neman.orderms.Repository.OrderRepository;
 import com.neman.orderms.Service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
     private final ProductClient productClient;
+    private final UserClient userClient;
     @Override
     public OrderResponseDto createOrder(OrderRequestDto dto) {
         ProductResponseDto product= productClient.getProductById(dto.getProductId());
@@ -33,14 +36,14 @@ public class OrderServiceImpl implements OrderService {
 
         productClient.decreaseStock(dto.getProductId(), dto.getQuantity());
 
-        Order order=Order.builder()
+        Orders orders = Orders.builder()
                 .userId(dto.getUserId())
                 .productId(dto.getProductId())
                 .quantity(dto.getQuantity())
                 .totalPrice(totalPrice)
                 .status("PENDING")
                 .build();
-        return orderMapper.toDto(orderRepository.save(order));
+        return orderMapper.toDto(orderRepository.save(orders));
     }
 
     @Override
@@ -53,8 +56,19 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderResponseDto getOrderById(Long id) {
-        Order order=orderRepository.findById(id)
+        Orders orders =orderRepository.findById(id)
                 .orElseThrow(() -> new OrderNotFoundException("Order not found with ID: " + id));
-        return orderMapper.toDto(order);
+        return orderMapper.toDto(orders);
     }
+
+    @Override
+    public UserResponseDto getUserById(Long userId) {
+    UserResponseDto userResponseDto = userClient.getUserById(userId);
+        if (userResponseDto == null) {
+            throw new OrderNotFoundException("User not found with ID: " + userId);
+        }
+        return userResponseDto;
+    }
+
+
 }

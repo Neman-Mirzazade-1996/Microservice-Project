@@ -27,3 +27,6 @@ spring:
     endpoint:
       health:
         show-details: always
+
+  application:
+    name: user-service

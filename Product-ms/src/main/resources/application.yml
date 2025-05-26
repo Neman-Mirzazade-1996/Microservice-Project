@@ -25,7 +25,10 @@ spring:
     endpoints:
       web:
         exposure:
-          include: health
+          include: "*"
     endpoint:
       health:
         show-details: always
+
+  application:
+    name: product-service

@@ -28,3 +28,12 @@ spring:
     endpoint:
       health:
         show-details: always
+
+  feign:
+    client:
+      config:
+        default:
+          loggerLevel: full
+
+  application:
+    name: order-service
