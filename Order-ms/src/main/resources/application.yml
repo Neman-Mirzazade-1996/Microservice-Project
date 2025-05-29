@@ -1,5 +1,5 @@
 server:
-  port: 8096
+  port: 9070
 
 spring:
   datasource:
@@ -20,20 +20,25 @@ spring:
       hibernate:
         format_sql: true
 
-  management:
-    endpoints:
-      web:
-        exposure:
-          include: health
-    endpoint:
-      health:
-        show-details: always
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
 
-  feign:
-    client:
-      config:
-        default:
-          loggerLevel: full
+logging:
+  level:
+    feign: DEBUG
+    com.neman.orderms.Client.ProductClient: DEBUG
 
-  application:
-    name: order-service
+application:
+   name: order-service
+
+
+
+
+
+

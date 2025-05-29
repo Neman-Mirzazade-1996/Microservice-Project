@@ -61,7 +61,7 @@ services:
     build: ./User-ms
     container_name: user-service
     ports:
-      - "8095:8095"
+      - "9090:9090"
     depends_on:
       user-db:
         condition: service_healthy
@@ -73,7 +73,7 @@ services:
     networks:
       - app-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8095/actuator/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:9090/actuator/health"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -82,10 +82,11 @@ services:
     build: ./Order-ms
     container_name: order-service
     ports:
-      - "8096:8096"
+      - "9092:9092"
     depends_on:
       order-db:
         condition: service_healthy
+
     environment:
       DB_CONNECTION_IP: order-db
       DB_CONNECTION_PORT: 3306
@@ -94,7 +95,7 @@ services:
     networks:
       - app-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8096/actuator/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:9092/actuator/health"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -103,7 +104,7 @@ services:
     build: ./Product-ms
     container_name: product-service
     ports:
-      - "8097:8097"
+      - "9091:9091"
     depends_on:
       product-db:
         condition: service_healthy
@@ -115,7 +116,7 @@ services:
     networks:
       - app-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8097/actuator/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:9091/actuator/health"]
       interval: 30s
       timeout: 10s
       retries: 5

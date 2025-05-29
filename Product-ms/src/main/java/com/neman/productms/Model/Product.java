@@ -42,4 +42,5 @@ public class Product {
     @UpdateTimestamp
     @Column(nullable = false, insertable = false)
     String updatedAt;
+
 }

@@ -12,6 +12,8 @@ import com.neman.productms.Service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 @Service
@@ -83,6 +85,7 @@ public class ProductServiceImpl implements ProductService {
         productMapper.toDto(productRepository.save(product));
     }
 
+    @Transactional
     @Override
     public void decreaseStock(Long productId, int quantity) {
         Product product=productRepository.findById(productId)

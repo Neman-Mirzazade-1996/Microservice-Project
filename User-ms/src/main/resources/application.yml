@@ -1,5 +1,5 @@
 server:
-  port: 8095
+  port: 9050
 
 spring:
   datasource:
@@ -19,14 +19,14 @@ spring:
       hibernate:
         format_sql: true
 
-  management:
-    endpoints:
-      web:
-        exposure:
-          include: health
-    endpoint:
-      health:
-        show-details: always
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
 
-  application:
-    name: user-service
+application:
+  name: user-service

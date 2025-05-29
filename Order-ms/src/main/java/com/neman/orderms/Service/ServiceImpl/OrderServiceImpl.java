@@ -8,6 +8,7 @@ import com.neman.orderms.Dto.ProductResponseDto;
 import com.neman.orderms.Dto.UserResponseDto;
 import com.neman.orderms.Exception.InsufficientStockException;
 import com.neman.orderms.Exception.OrderNotFoundException;
+import com.neman.orderms.Exception.UserNotFoundException;
 import com.neman.orderms.Mapper.OrderMapper;
 import com.neman.orderms.Model.Orders;
 import com.neman.orderms.Repository.OrderRepository;
@@ -27,13 +28,17 @@ public class OrderServiceImpl implements OrderService {
     private final UserClient userClient;
     @Override
     public OrderResponseDto createOrder(OrderRequestDto dto) {
+        UserResponseDto user = userClient.getUserById(dto.getUserId());
+        if (user == null) {
+            throw new UserNotFoundException("User not found with ID: " + dto.getUserId());
+        }
+
         ProductResponseDto product= productClient.getProductById(dto.getProductId());
         if (product.getStockQuantity() < dto.getQuantity()) {
             throw new InsufficientStockException("Insufficient stock for product with ID: " + dto.getProductId());
         }
 
         double totalPrice = product.getPrice() * dto.getQuantity();
-
         productClient.decreaseStock(dto.getProductId(), dto.getQuantity());
 
         Orders orders = Orders.builder()
@@ -69,6 +74,4 @@ public class OrderServiceImpl implements OrderService {
         }
         return userResponseDto;
     }
-
-
 }

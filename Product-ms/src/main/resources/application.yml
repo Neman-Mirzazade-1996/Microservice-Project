@@ -1,5 +1,5 @@
 server:
-  port: 8097
+  port: 9060
 
 spring:
   datasource:
@@ -21,14 +21,14 @@ spring:
         format_sql: true
 
 
-  management:
+management:
     endpoints:
       web:
         exposure:
-          include: "*"
+          include: health
     endpoint:
       health:
         show-details: always
 
-  application:
-    name: product-service
+application:
+  name: product-service

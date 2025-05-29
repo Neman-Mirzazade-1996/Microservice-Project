@@ -47,7 +47,7 @@ dependencies {
 
     // feign-client
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
-    implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
+    //implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
 
 
     // Spring Boot Actuator
