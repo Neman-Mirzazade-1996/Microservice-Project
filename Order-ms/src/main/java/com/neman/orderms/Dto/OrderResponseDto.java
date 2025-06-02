@@ -18,5 +18,5 @@ public class OrderResponseDto {
     Double totalPrice;
     String status;
     LocalDateTime createdAt;
-    LocalDateTime updatedAt;
+
 }
