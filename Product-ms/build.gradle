@@ -23,7 +23,7 @@ version = "${projectVersion}-${hash}"
 
 def dockerFileName = 'Dockerfile'
 def jarFileName = 'product-service.jar'
-def dockerImageTag = ["${project.group}/${project.name.toLowerCase()}:${version}"]
+def dockerImageTag = ["${project.findProperty('dockerRepository')}/${project.name.toLowerCase()}:${version}"]
 
 bootJar {
 	archiveFileName = jarFileName
