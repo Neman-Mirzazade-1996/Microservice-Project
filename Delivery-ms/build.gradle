@@ -23,7 +23,7 @@ group = 'com.neman'
 
 def dockerFileName = 'Dockerfile'
 def jarFileName = 'delivery-service.jar'
-def dockerImageTag = ["${project.group}/${project.name}:${version}"]
+def dockerImageTag = ["${project.group}/${project.name.toLowerCase()}:${version}"]
 
 bootJar {
     archiveFileName = jarFileName
