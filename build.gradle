@@ -30,10 +30,6 @@ tasks.register('buildAllDockerImages') {
             ':Product-ms:buildDockerImage',
             ':Product-ms:pushDockerImage',
 
-            ':Delivery-ms:createDockerfile',
-            ':Delivery-ms:buildDockerImage',
-            ':Delivery-ms:pushDockerImage',
-
             ':Order-ms:createDockerfile',
             ':Order-ms:buildDockerImage',
             ':Order-ms:pushDockerImage',

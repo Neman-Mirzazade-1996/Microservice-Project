@@ -55,24 +55,6 @@ services:
       timeout: 5s
       retries: 5
 
-  delivery-db:
-    image: mysql:8.0
-    container_name: delivery-db
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: delivery_db
-      MYSQL_USER: delivery
-      MYSQL_PASSWORD: password
-    ports:
-      - "3310:3306"
-    networks:
-      - app-network
-    healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "delivery", "-ppassword" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
 
 
   user-service:
@@ -139,28 +121,6 @@ services:
       timeout: 10s
       retries: 5
 
-  delivery-service:
-    build:
-        context: ./Delivery-ms/build/docker
-        dockerfile: Dockerfile
-    container_name: delivery-service
-    ports:
-      - "9081:9081"
-    depends_on:
-      delivery-db:
-        condition: service_healthy
-    environment:
-      DB_CONNECTION_IP: delivery-db
-      DB_CONNECTION_PORT: 3306
-      DB_CONNECTION_USERNAME: delivery
-      DB_CONNECTION_PASSWORD: password
-    networks:
-      - app-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9081/actuator/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
 
 networks:
   app-network:

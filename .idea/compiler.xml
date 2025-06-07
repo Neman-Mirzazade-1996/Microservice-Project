@@ -17,6 +17,8 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="Delivery-ms" target="17" />
+      <module name="MicroserviceProject.Delivery-ms" target="17" />
       <module name="MicroserviceProject.main" target="17" />
       <module name="MicroserviceProject.test" target="17" />
     </bytecodeTargetLevel>

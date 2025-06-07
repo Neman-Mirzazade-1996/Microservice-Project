@@ -1,4 +1,4 @@
 rootProject.name = 'MicroserviceProject'
 
-include 'User-ms', 'Order-ms', 'Product-ms', 'Delivery-ms'
+include 'User-ms', 'Order-ms', 'Product-ms'
 

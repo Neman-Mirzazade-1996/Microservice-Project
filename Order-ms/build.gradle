@@ -48,7 +48,7 @@ tasks.register('createDockerfile') {
 			WORKDIR /app
 			EXPOSE 9070
 			COPY ${jarFileName} app.jar
-			ENTRYPOINT ["java", "-jar", "/app.jar"]
+			ENTRYPOINT ["java", "-jar", "app.jar"]
 		"""
 
         println "Dockerfile and JAR copied to: ${dockerDir}"
