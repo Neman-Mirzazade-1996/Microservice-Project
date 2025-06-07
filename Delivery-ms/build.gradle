@@ -12,17 +12,21 @@ plugins {
     id 'com.bmuschko.docker-remote-api' version "${dockerVersion}"
 }
 
+
 import com.bmuschko.gradle.docker.tasks.image.DockerPushImage
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 
+
 group = 'com.neman'
 
-def baseVersion = '1.0.0'
-def hash= 'git rev-parse --short HEAD'.execute().text.trim()
-version = "${projectVersion}-${hash}"
+
+    def baseVersion = '1.0.0'
+    def hash= 'git rev-parse --short HEAD'.execute().text.trim()
+    version = "${projectVersion}-${hash}"
+
 
 def dockerFileName = 'Dockerfile'
-def jarFileName = 'order-service.jar'
+def jarFileName = 'delivery-service.jar'
 def dockerImageTag = ["${project.group}/${project.name}:${version}"]
 
 bootJar {
@@ -44,12 +48,12 @@ tasks.register('createDockerfile') {
         // Dockerfile yaz
         def dockerfile = new File(dockerDir, dockerFileName)
         dockerfile.text = """
-			FROM openjdk:17-jdk-slim
-			WORKDIR /app
-			EXPOSE 9070
-			COPY ${jarFileName} app.jar
-			ENTRYPOINT ["java", "-jar", "/app.jar"]
-		"""
+            FROM openjdk:17-jdk-slim
+            WORKDIR /app
+            EXPOSE 9081
+            COPY ${jarFileName} app.jar
+            ENTRYPOINT ["java", "-jar", "/app.jar"]
+        """
 
         println "Dockerfile and JAR copied to: ${dockerDir}"
     }
@@ -72,13 +76,10 @@ tasks.register('pushDockerImage', DockerPushImage) {
     }
 }
 
+
 clean {
     delete layout.buildDirectory.dir("docker")
 }
-
-
-
-
 
 
 java {
@@ -95,9 +96,7 @@ configurations {
 
 repositories {
     mavenCentral()
-    maven { url "https://repo.spring.io/release" }
 }
-
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
@@ -119,27 +118,11 @@ dependencies {
     // swagger
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
 
-    // feign-client
-    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
-    //implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
-
-
     // Spring Boot Actuator
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
-
 }
-
-dependencyManagement {
-    imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:2023.0.1"
-    }
-}
-
 
 tasks.named('test') {
     useJUnitPlatform()
 }
 
-tasks.named('test') {
-    enabled = false
-}

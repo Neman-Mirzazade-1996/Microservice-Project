@@ -1,11 +1,84 @@
+buildscript {
+    ext {
+        dockerVersion = '8.0.0'
+        projectVersion = '0.1'
+    }
+}
+
 plugins {
     id 'java'
     id 'org.springframework.boot' version '3.2.5'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'com.bmuschko.docker-remote-api' version "${dockerVersion}"
 }
 
+import com.bmuschko.gradle.docker.tasks.image.DockerPushImage
+import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
+
 group = 'com.neman'
-version = '0.1'
+
+def baseVersion = '1.0.0'
+def hash= 'git rev-parse --short HEAD'.execute().text.trim()
+version = "${projectVersion}-${hash}"
+
+def dockerFileName = 'Dockerfile'
+def jarFileName = 'user-service.jar'
+def dockerImageTag = ["${project.group}/${project.name}:${version}"]
+
+bootJar {
+    archiveFileName = jarFileName
+}
+
+tasks.register('createDockerfile') {
+    dependsOn 'bootJar'
+    doLast {
+        def dockerDir = layout.buildDirectory.dir("docker").get().asFile
+        dockerDir.mkdirs()
+
+        // JAR faylını docker folder-ə kopyala
+        copy {
+            from tasks.named('bootJar').get().archiveFile.get().asFile
+            into dockerDir
+        }
+
+        // Dockerfile yaz
+        def dockerfile = new File(dockerDir, dockerFileName)
+        dockerfile.text = """
+			FROM openjdk:17-jdk-slim
+			WORKDIR /app
+			EXPOSE 9050
+			COPY ${jarFileName} app.jar
+			ENTRYPOINT ["java", "-jar", "/app.jar"]
+		"""
+
+        println "Dockerfile and JAR copied to: ${dockerDir}"
+    }
+}
+
+tasks.register('buildDockerImage', DockerBuildImage) {
+    dependsOn 'createDockerfile'
+    inputDir.set(layout.buildDirectory.dir("docker"))
+    dockerFile.set(layout.buildDirectory.file("docker/${dockerFileName}"))
+    images.set(dockerImageTag)
+}
+
+
+tasks.register('pushDockerImage', DockerPushImage) {
+    dependsOn 'buildDockerImage'
+    images.set(dockerImageTag)
+    registryCredentials {
+        url.set('https://index.docker.io/v1/')
+        username.set(project.findProperty("dockerUsername") ?: "")
+        password.set(project.findProperty("dockerPassword") ?: "")
+    }
+}
+
+clean {
+    delete layout.buildDirectory.dir("docker")
+}
+
+
+
 
 java {
     toolchain {

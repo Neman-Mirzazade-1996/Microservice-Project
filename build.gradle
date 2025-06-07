@@ -1,6 +1,50 @@
+buildscript {
+    ext {
+        dockerVersion = '8.0.0'
+        projectVersion = '0.1'
+    }
+}
+
+
 plugins {
     id 'java'
+    id 'org.springframework.boot' version '3.2.5'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id 'com.bmuschko.docker-remote-api' version "${dockerVersion}"
 }
+
+import com.bmuschko.gradle.docker.tasks.image.DockerPushImage
+import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
+group = 'com.neman'
+def baseVersion = '1.0.0'
+def hash = 'git rev-parse --short HEAD'.execute().text.trim()
+version = "${projectVersion}-${hash}"
+
+tasks.register('buildAllDockerImages') {
+    group = 'docker'
+    description = 'Builds and pushes docker images for all microservices'
+
+    dependsOn(
+            ':user-ms:createDockerfile',
+            ':user-ms:buildDockerImage',
+            ':user-ms:pushDockerImage',
+
+            ':product-ms:createDockerfile',
+            ':product-ms:buildDockerImage',
+            ':product-ms:pushDockerImage',
+
+            ':delivery-ms:createDockerfile',
+            ':delivery-ms:buildDockerImage',
+            ':delivery-ms:pushDockerImage',
+
+            ':order-ms:createDockerfile',
+            ':order-ms:buildDockerImage',
+            ':order-ms:pushDockerImage',
+
+    )
+}
+
+
 
 allprojects {
     repositories {

@@ -55,13 +55,31 @@ services:
       timeout: 5s
       retries: 5
 
+  delivery-db:
+    image: mysql:8.0
+    container_name: delivery-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: delivery_db
+      MYSQL_USER: delivery
+      MYSQL_PASSWORD: password
+    ports:
+      - "3310:3306"
+    networks:
+      - app-network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "delivery", "-ppassword" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 
 
   user-service:
     build: ./User-ms
     container_name: user-service
     ports:
-      - "9090:9090"
+      - "9050:9050"
     depends_on:
       user-db:
         condition: service_healthy
@@ -73,7 +91,7 @@ services:
     networks:
       - app-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9090/actuator/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:9050/actuator/health"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -82,7 +100,7 @@ services:
     build: ./Order-ms
     container_name: order-service
     ports:
-      - "9092:9092"
+      - "9070:9070"
     depends_on:
       order-db:
         condition: service_healthy
@@ -95,7 +113,7 @@ services:
     networks:
       - app-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9092/actuator/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:9070/actuator/health"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -104,7 +122,7 @@ services:
     build: ./Product-ms
     container_name: product-service
     ports:
-      - "9091:9091"
+      - "9060:9060"
     depends_on:
       product-db:
         condition: service_healthy
@@ -116,7 +134,30 @@ services:
     networks:
       - app-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9091/actuator/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:9060/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  delivery-service:
+    build:
+        context: ./Delivery-ms/build/docker
+        dockerfile: Dockerfile
+    container_name: delivery-service
+    ports:
+      - "9081:9081"
+    depends_on:
+      delivery-db:
+        condition: service_healthy
+    environment:
+      DB_CONNECTION_IP: delivery-db
+      DB_CONNECTION_PORT: 3306
+      DB_CONNECTION_USERNAME: delivery
+      DB_CONNECTION_PASSWORD: password
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9081/actuator/health"]
       interval: 30s
       timeout: 10s
       retries: 5
