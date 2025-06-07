@@ -12,17 +12,14 @@ plugins {
     id 'com.bmuschko.docker-remote-api' version "${dockerVersion}"
 }
 
-
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 import com.bmuschko.gradle.docker.tasks.image.DockerPushImage
 
 group = 'com.neman'
 
-
     def baseVersion = '1.0.0'
     def hash= 'git rev-parse --short HEAD'.execute().text.trim()
     version = "${projectVersion}-${hash}"
-
 
 def dockerFileName = 'Dockerfile'
 def jarFileName = 'delivery-service.jar'

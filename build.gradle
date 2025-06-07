@@ -7,9 +7,6 @@ buildscript {
 
 
 plugins {
-    id 'java'
-    id 'org.springframework.boot' version '3.2.5'
-    id 'io.spring.dependency-management' version '1.1.7'
     id 'com.bmuschko.docker-remote-api' version "${dockerVersion}"
 }
 
@@ -25,21 +22,21 @@ tasks.register('buildAllDockerImages') {
     description = 'Builds and pushes docker images for all microservices'
 
     dependsOn(
-            ':user-ms:createDockerfile',
-            ':user-ms:buildDockerImage',
-            ':user-ms:pushDockerImage',
+            ':User-ms:createDockerfile',
+            ':User-ms:buildDockerImage',
+            ':User-ms:pushDockerImage',
 
-            ':product-ms:createDockerfile',
-            ':product-ms:buildDockerImage',
-            ':product-ms:pushDockerImage',
+            ':Product-ms:createDockerfile',
+            ':Product-ms:buildDockerImage',
+            ':Product-ms:pushDockerImage',
 
-            ':delivery-ms:createDockerfile',
-            ':delivery-ms:buildDockerImage',
-            ':delivery-ms:pushDockerImage',
+            ':Delivery-ms:createDockerfile',
+            ':Delivery-ms:buildDockerImage',
+            ':Delivery-ms:pushDockerImage',
 
-            ':order-ms:createDockerfile',
-            ':order-ms:buildDockerImage',
-            ':order-ms:pushDockerImage',
+            ':Order-ms:createDockerfile',
+            ':Order-ms:buildDockerImage',
+            ':Order-ms:pushDockerImage',
 
     )
 }

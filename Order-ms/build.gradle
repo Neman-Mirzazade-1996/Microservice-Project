@@ -17,9 +17,9 @@ import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 
 group = 'com.neman'
 
-def baseVersion = '1.0.0'
-def hash= 'git rev-parse --short HEAD'.execute().text.trim()
-version = "${projectVersion}-${hash}"
+    def baseVersion = '1.0.0'
+    def hash= 'git rev-parse --short HEAD'.execute().text.trim()
+    version = "${projectVersion}-${hash}"
 
 def dockerFileName = 'Dockerfile'
 def jarFileName = 'order-service.jar'
@@ -140,6 +140,4 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-tasks.named('test') {
-    enabled = false
-}
+
