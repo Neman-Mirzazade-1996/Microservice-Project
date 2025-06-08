@@ -11,16 +11,15 @@
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.mapstruct/mapstruct-processor/1.5.5.Final/897f6f115930b936287bef552bf5fe28cc64717d/mapstruct-processor-1.5.5.Final.jar" />
         </processorPath>
         <module name="MicroserviceProject.Order-ms.main" />
-        <module name="MicroserviceProject.User-ms.main" />
-        <module name="MicroserviceProject.Delivery-ms.main" />
         <module name="MicroserviceProject.Product-ms.main" />
+        <module name="MicroserviceProject.User-ms.main" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="Delivery-ms" target="17" />
       <module name="MicroserviceProject.Delivery-ms" target="17" />
-      <module name="MicroserviceProject.main" target="17" />
-      <module name="MicroserviceProject.test" target="17" />
+      <module name="MicroserviceProject.Delivery-ms.main" target="17" />
+      <module name="MicroserviceProject.Delivery-ms.test" target="17" />
     </bytecodeTargetLevel>
   </component>
 </project>

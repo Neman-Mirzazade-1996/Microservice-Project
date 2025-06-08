@@ -35,18 +35,16 @@ tasks.register('createDockerfile') {
 		def dockerDir = layout.buildDirectory.dir("docker").get().asFile
 		dockerDir.mkdirs()
 
-		// JAR faylını docker folder-ə kopyala
 		copy {
 			from tasks.named('bootJar').get().archiveFile.get().asFile
 			into dockerDir
 		}
 
-		// Dockerfile yaz
+
 		def dockerfile = new File(dockerDir, dockerFileName)
 		dockerfile.text = """
 			FROM openjdk:17-jdk-slim
 			WORKDIR /app
-			EXPOSE 9060
 			COPY ${jarFileName} app.jar
 			ENTRYPOINT ["java", "-jar", "app.jar"]
 		"""

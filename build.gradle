@@ -5,13 +5,11 @@ buildscript {
     }
 }
 
-
 plugins {
+    id 'java'
     id 'com.bmuschko.docker-remote-api' version "${dockerVersion}"
 }
 
-import com.bmuschko.gradle.docker.tasks.image.DockerPushImage
-import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 group = 'com.neman'
 def baseVersion = '1.0.0'
 def hash = 'git rev-parse --short HEAD'.execute().text.trim()
@@ -20,7 +18,6 @@ version = "${projectVersion}-${hash}"
 tasks.register('buildAllDockerImages') {
     group = 'docker'
     description = 'Builds and pushes docker images for all microservices'
-
     dependsOn(
             ':User-ms:createDockerfile',
             ':User-ms:buildDockerImage',
@@ -36,8 +33,6 @@ tasks.register('buildAllDockerImages') {
 
     )
 }
-
-
 
 allprojects {
     repositories {
