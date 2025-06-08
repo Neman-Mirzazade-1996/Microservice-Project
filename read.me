@@ -1,0 +1,27 @@
+# Microservice Project
+
+This project uses Docker Compose for local orchestration. An Nginx container routes traffic to the individual services.
+
+## Running
+
+```bash
+docker-compose up --build
+```
+
+### Scaling services
+
+Each service can be scaled using Compose:
+
+```bash
+docker-compose up --scale user-service=2 --scale product-service=2 --scale order-service=2
+```
+
+Nginx will automatically proxy requests to the available instances on the network. Requests should be sent to:
+
+- `http://localhost:5010` for **user-service**
+- `http://localhost:5020` for **product-service**
+- `http://localhost:5040` for **order-service**
+
+## Configuration
+
+Order service resolves other services via the environment variables `USER_SERVICE_URL` and `PRODUCT_SERVICE_URL`. Defaults point at the `nginx` container.
