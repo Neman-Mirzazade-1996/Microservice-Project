@@ -1,0 +1,44 @@
+server:
+  port: 5040
+
+spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DB_CONNECTION_IP:localhost}:${DB_CONNECTION_PORT:3308}/order_db?createDatabaseIfNotExist=true
+    username: ${DB_CONNECTION_USERNAME:order}
+    password: ${DB_CONNECTION_PASSWORD:password}
+
+  jpa:
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQLDialect
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    open-in-view: true
+    properties:
+      hibernate:
+        format_sql: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    feign: DEBUG
+    com.neman.orderms.Client.ProductClient: DEBUG
+
+application:
+   name: order-service
+
+
+
+
+
+
