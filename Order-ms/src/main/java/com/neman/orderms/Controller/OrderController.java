@@ -28,7 +28,7 @@ public class OrderController {
             return orderService.getAllOrders();
      }
 
-     @GetMapping("getOrderById/{id}")
+     @GetMapping("/getOrderById/{id}")
      public OrderResponseDto getOrderById(@PathVariable Long id) {
             return orderService.getOrderById(id);
      }
