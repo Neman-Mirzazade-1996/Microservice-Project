@@ -131,6 +131,13 @@ services:
 
   nginx:
     image: nginx:latest
+    depends_on:
+      user-service:
+        condition: service_healthy
+      product-service:
+        condition: service_healthy
+      order-service:
+        condition: service_healthy
     ports:
       - "5010:5010"
       - "5020:5020"
