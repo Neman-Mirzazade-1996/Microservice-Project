@@ -18,17 +18,6 @@
         </option>
       </GradleProjectSettings>
       <GradleProjectSettings>
-        <option name="distributionType" value="WRAPPED" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$/Delivery-ms" />
-        <option name="gradleHome" value="$PROJECT_DIR$/../../../../Gradle/gradle-8.6" />
-        <option name="gradleJvm" value="17" />
-        <option name="modules">
-          <set>
-            <option value="$PROJECT_DIR$/Delivery-ms" />
-          </set>
-        </option>
-      </GradleProjectSettings>
-      <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/Order-ms" />
         <option name="gradleHome" value="$PROJECT_DIR$/../../../../Gradle/gradle-8.6" />
         <option name="gradleJvm" value="17" />
