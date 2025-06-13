@@ -1,5 +1,6 @@
 package com.neman.productms.Dto;
 
+import com.neman.productms.Model.Category;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -12,7 +13,7 @@ public class ProductResponseDto {
     Long id;
     String name;
     String description;
-    String category;
+    Category category;
     String brand;
     String sku;
     Double price;

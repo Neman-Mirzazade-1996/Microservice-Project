@@ -1,5 +1,5 @@
 server:
-  port: 5020
+  port: 4010
 
 spring:
   datasource:

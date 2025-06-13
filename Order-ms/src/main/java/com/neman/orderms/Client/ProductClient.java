@@ -5,7 +5,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
 
-@FeignClient(name = "product-service", path = "/api/v1/products", url = "${PRODUCT_SERVICE_URL:http://nginx:5020}")
+@FeignClient(name = "product-service", path = "/api/v1/products", url = "${PRODUCT_SERVICE_URL:http://nginx:4010}")
 public interface ProductClient {
 
     @GetMapping("/get/{id}")

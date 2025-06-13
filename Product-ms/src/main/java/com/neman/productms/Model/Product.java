@@ -23,8 +23,6 @@ public class Product {
     @Column(columnDefinition = "TEXT")
     String description;
     @Column(nullable = false)
-    String category;
-    @Column(nullable = false)
     String brand;
     @Column(unique = true, nullable = false)
     String sku;
@@ -42,5 +40,8 @@ public class Product {
     @UpdateTimestamp
     @Column(nullable = false, insertable = false)
     String updatedAt;
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    Category category;
 
 }
