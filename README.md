@@ -31,9 +31,9 @@ docker-compose up --build
 
 The services will be reachable via nginx on the following ports:
 
-- `http://localhost:5010` – **user-service**
-- `http://localhost:5020` – **product-service**
-- `http://localhost:5040` – **order-service**
+- `http://localhost:4020` – **user-service**
+- `http://localhost:4010` – **product-service**
+- `http://localhost:4030` – **order-service**
 
 ### Scaling Services
 
