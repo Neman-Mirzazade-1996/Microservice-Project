@@ -96,8 +96,8 @@ services:
       DB_CONNECTION_PORT: 3306
       DB_CONNECTION_USERNAME: order
       DB_CONNECTION_PASSWORD: password
-      USER_SERVICE_URL: http://nginx:5010
-      PRODUCT_SERVICE_URL: http://nginx:5020
+      USER_SERVICE_URL: http://nginx:4020
+      PRODUCT_SERVICE_URL: http://nginx:4010
     networks:
       - app-network
     healthcheck:
