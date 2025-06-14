@@ -12,7 +12,7 @@ import lombok.experimental.FieldDefaults;
 public class ProductUpdateDto {
     String name;
     String description;
-    Category category;
+    Long categoryId;
     String brand;
     String sku;
     Double price;

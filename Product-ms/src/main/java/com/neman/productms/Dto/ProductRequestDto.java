@@ -17,5 +17,5 @@ public class ProductRequestDto {
     Double price;
     String status;
     String imageUrl;
-    Category category;
+    Long categoryId;
 }

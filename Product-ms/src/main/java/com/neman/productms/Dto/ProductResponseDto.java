@@ -13,7 +13,7 @@ public class ProductResponseDto {
     Long id;
     String name;
     String description;
-    Category category;
+    CategoryResponseDto category;
     String brand;
     String sku;
     Double price;

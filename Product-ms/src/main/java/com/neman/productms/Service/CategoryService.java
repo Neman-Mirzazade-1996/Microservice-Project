@@ -11,5 +11,5 @@ public interface CategoryService {
     CategoryResponseDto updateCategory(Long id, CategoryRequestDto dto);
     void deleteCategory(Long id);
     CategoryResponseDto getCategoryById(Long id);
-     List<CategoryResponseDto> getAllCategories();
+    List<CategoryResponseDto> getAllCategories();
 }

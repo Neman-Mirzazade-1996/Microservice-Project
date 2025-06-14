@@ -3,10 +3,13 @@ package com.neman.productms.Service.ServiceImpl;
 import com.neman.productms.Dto.ProductRequestDto;
 import com.neman.productms.Dto.ProductResponseDto;
 import com.neman.productms.Dto.ProductUpdateDto;
+import com.neman.productms.Exception.CategoryNotFoundException;
 import com.neman.productms.Exception.ProductAlreadyExistException;
 import com.neman.productms.Exception.ProductNotFoundException;
 import com.neman.productms.Mapper.ProductMapper;
+import com.neman.productms.Model.Category;
 import com.neman.productms.Model.Product;
+import com.neman.productms.Repository.CategoryRepository;
 import com.neman.productms.Repository.ProductRepository;
 import com.neman.productms.Service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -21,17 +24,22 @@ import java.util.List;
 @Slf4j
 public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
-     private final ProductMapper productMapper;
+    private final CategoryRepository categoryRepository;
+    private final ProductMapper productMapper;
 
     @Override
     public ProductResponseDto createProduct(ProductRequestDto dto) {
         if (productRepository.existsBySku(dto.getSku())) {
             throw new ProductAlreadyExistException("Product with SKU " + dto.getSku() + " already exists");
         }
+
+        Category category = categoryRepository.findById(dto.getCategoryId())
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found"));
+
         Product product = Product.builder()
                 .name(dto.getName())
                 .description(dto.getDescription())
-                .category(dto.getCategory())
+                .category(category)
                 .brand(dto.getBrand())
                 .sku(dto.getSku())
                 .price(dto.getPrice())
@@ -46,9 +54,13 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponseDto updateProduct(Long id, ProductUpdateDto dto) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found"));
+
+        Category category = categoryRepository.findById(dto.getCategoryId())
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found"));
+
         product.setName(dto.getName());
         product.setDescription(dto.getDescription());
-        product.setCategory(dto.getCategory());
+        product.setCategory(category);
         product.setBrand(dto.getBrand());
         product.setSku(dto.getSku());
         product.setPrice(dto.getPrice());
