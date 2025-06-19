@@ -11,6 +11,8 @@ services:
       MYSQL_PASSWORD: password
     ports:
       - "3307:3306"
+    volumes:
+      - user_data:/var/lib/mysql
     networks:
       - app-network
     healthcheck:
@@ -29,6 +31,8 @@ services:
       MYSQL_PASSWORD: password
     ports:
       - "3308:3306"
+    volumes:
+      - order_data:/var/lib/mysql
     networks:
       - app-network
     healthcheck:
@@ -47,6 +51,8 @@ services:
       MYSQL_PASSWORD: password
     ports:
       - "3309:3306"
+    volumes:
+      - product_data:/var/lib/mysql
     networks:
       - app-network
     healthcheck:
@@ -54,8 +60,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
-
 
   user-service:
     image: neman1234/service-user-ms:1.0.47bab6c
@@ -90,14 +94,13 @@ services:
     depends_on:
       order-db:
         condition: service_healthy
-
     environment:
       DB_CONNECTION_IP: order-db
       DB_CONNECTION_PORT: 3306
       DB_CONNECTION_USERNAME: order
       DB_CONNECTION_PASSWORD: password
-      USER_SERVICE_URL: http://nginx:4020
-      PRODUCT_SERVICE_URL: http://nginx:4010
+      USER_SERVICE_URL: http://nginx/api/v1/users
+      PRODUCT_SERVICE_URL: http://nginx/api/v1/products
     networks:
       - app-network
     healthcheck:
@@ -139,6 +142,7 @@ services:
       order-service:
         condition: service_healthy
     ports:
+      - "80:80"
       - "4020:4020"
       - "4010:4010"
       - "4030:4030"
@@ -147,6 +151,10 @@ services:
     networks:
       - app-network
 
+volumes:
+  user_data:
+  order_data:
+  product_data:
 
 networks:
   app-network:

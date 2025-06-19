@@ -23,7 +23,10 @@
         <option name="gradleJvm" value="17" />
         <option name="modules">
           <set>
-            <option value="$PROJECT_DIR$/Order-ms" />
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/order-ms" />
+            <option value="$PROJECT_DIR$/product-ms" />
+            <option value="$PROJECT_DIR$/user-ms" />
           </set>
         </option>
       </GradleProjectSettings>
@@ -33,7 +36,10 @@
         <option name="gradleJvm" value="17" />
         <option name="modules">
           <set>
-            <option value="$PROJECT_DIR$/Product-ms" />
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/order-ms" />
+            <option value="$PROJECT_DIR$/product-ms" />
+            <option value="$PROJECT_DIR$/user-ms" />
           </set>
         </option>
       </GradleProjectSettings>
@@ -43,7 +49,10 @@
         <option name="gradleJvm" value="17" />
         <option name="modules">
           <set>
-            <option value="$PROJECT_DIR$/User-ms" />
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/order-ms" />
+            <option value="$PROJECT_DIR$/product-ms" />
+            <option value="$PROJECT_DIR$/user-ms" />
           </set>
         </option>
       </GradleProjectSettings>
