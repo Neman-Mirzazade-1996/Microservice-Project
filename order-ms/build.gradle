@@ -56,6 +56,9 @@ dependencies {
     // feign-client
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
+    // feign load balancer
+    implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
+
     //hibernate
     implementation 'org.hibernate:hibernate-core:6.2.7.Final'
     annotationProcessor 'org.hibernate:hibernate-jpamodelgen:6.2.7.Final'
@@ -76,5 +79,4 @@ dependencyManagement {
 tasks.named('test') {
     useJUnitPlatform()
 }
-
 

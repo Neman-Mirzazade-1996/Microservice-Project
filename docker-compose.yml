@@ -61,8 +61,10 @@ services:
       timeout: 5s
       retries: 5
 
-  user-service:
+  user-service-1:
     image: neman1234/service-user-ms:1.0.47bab6c
+    container_name: user-service-1
+    hostname: user-service-1
     build:
       context: ./user-ms/docker
       dockerfile: Dockerfile
@@ -79,13 +81,41 @@ services:
     networks:
       - app-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:4020/actuator/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:4020/api/v1/users/health"]
       interval: 30s
       timeout: 10s
       retries: 5
 
-  order-service:
+  user-service-2:
+    image: neman1234/service-user-ms:1.0.47bab6c
+    container_name: user-service-2
+    hostname: user-service-2
+    build:
+      context: ./user-ms/docker
+      dockerfile: Dockerfile
+    expose:
+      - "4020"
+    depends_on:
+      user-db:
+        condition: service_healthy
+    environment:
+      DB_CONNECTION_IP: user-db
+      DB_CONNECTION_PORT: 3306
+      DB_CONNECTION_USERNAME: user
+      DB_CONNECTION_PASSWORD: password
+    networks:
+      - app-network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:4020/api/v1/users/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+
+  order-service-1:
     image: neman1234/service-order-ms:1.0.47bab6c
+    container_name: order-service-1
+    hostname: order-service-1
     build:
       context: ./order-ms/docker
       dockerfile: Dockerfile
@@ -99,8 +129,9 @@ services:
       DB_CONNECTION_PORT: 3306
       DB_CONNECTION_USERNAME: order
       DB_CONNECTION_PASSWORD: password
-      USER_SERVICE_URL: http://nginx/api/v1/users
-      PRODUCT_SERVICE_URL: http://nginx/api/v1/products
+      USER_SERVICE_URL: http://user-service-1:4020
+      PRODUCT_SERVICE_URL: http://product-service-1:4010
+      GATEWAY_HOST: http://nginx
     networks:
       - app-network
     healthcheck:
@@ -109,8 +140,40 @@ services:
       timeout: 10s
       retries: 5
 
-  product-service:
+
+  order-service-2:
+    image: neman1234/service-order-ms:1.0.47bab6c
+    container_name: order-service-2
+    hostname: order-service-2
+    build:
+      context: ./order-ms/docker
+      dockerfile: Dockerfile
+    expose:
+      - "4030"
+    depends_on:
+      order-db:
+        condition: service_healthy
+    environment:
+      DB_CONNECTION_IP: order-db
+      DB_CONNECTION_PORT: 3306
+      DB_CONNECTION_USERNAME: order
+      DB_CONNECTION_PASSWORD: password
+      USER_SERVICE_URL: http://user-service-1:4020
+      PRODUCT_SERVICE_URL: http://product-service-1:4010
+      GATEWAY_HOST: http://nginx
+    networks:
+      - app-network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:4030/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+
+  product-service-1:
     image: neman1234/service-product-ms:1.0.47bab6c
+    container_name: product-service-1
+    hostname: product-service-1
     build:
        context: ./product-ms/docker
        dockerfile: Dockerfile
@@ -132,24 +195,52 @@ services:
       timeout: 10s
       retries: 5
 
+  product-service-2:
+    image: neman1234/service-product-ms:1.0.47bab6c
+    container_name: product-service-2
+    hostname: product-service-2
+    build:
+      context: ./product-ms/docker
+      dockerfile: Dockerfile
+    expose:
+      - "4010"
+    depends_on:
+      product-db:
+        condition: service_healthy
+    environment:
+      DB_CONNECTION_IP: product-db
+      DB_CONNECTION_PORT: 3306
+      DB_CONNECTION_USERNAME: product
+      DB_CONNECTION_PASSWORD: password
+    networks:
+      - app-network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:4010/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
   nginx:
     image: nginx:latest
+    container_name: nginx
     depends_on:
-      user-service:
-        condition: service_healthy
-      product-service:
-        condition: service_healthy
-      order-service:
-        condition: service_healthy
+      - user-service-1
+      - user-service-2
+      - product-service-1
+      - product-service-2
+      - order-service-1
+      - order-service-2
     ports:
       - "80:80"
-      - "4020:4020"
-      - "4010:4010"
-      - "4030:4030"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 volumes:
   user_data:
