@@ -1,91 +1,207 @@
-# Microservice Project
+# Microservices Application
 
-This repository contains a small Spring Boot based microservice system with three services:
+A modern microservices architecture built with Spring Boot, showcasing service orchestration, load balancing, and containerization.
 
-- **User Service** - manages user accounts.
-- **Product Service** - manages products and stock levels.
-- **Order Service** - handles customer orders and communicates with the other services through [Feign](https://spring.io/projects/spring-cloud-openfeign) clients.
+## 📋 Table of Contents
+- [Architecture Overview](#architecture-overview)
+- [Technology Stack](#technology-stack)
+- [Project Structure](#project-structure)
+- [Prerequisites](#prerequisites)
+- [Getting Started](#getting-started)
+- [Service Details](#service-details)
+- [API Documentation](#api-documentation)
+- [Configuration](#configuration)
+- [Monitoring & Health](#monitoring--health)
+- [Troubleshooting](#troubleshooting)
 
-Services are containerised and orchestrated locally with **Docker Compose**. An **Nginx** container acts as a simple load balancer and reverse proxy for all services.
+## 🏗 Architecture Overview
 
-## Project Structure
+This project implements a microservices architecture with three core services:
 
+- **User Service** (Port: 4020) - Manages user data and authentication
+- **Product Service** (Port: 4010) - Handles product catalog and inventory
+- **Order Service** (Port: 4030) - Processes orders and orchestrates service communication
+
+### Key Features
+
+- **Load Balancing**: Nginx reverse proxy for intelligent request distribution
+- **Service Discovery**: Docker DNS-based service resolution
+- **Database per Service**: Independent MySQL instance for each service
+- **Resilient Communication**: Feign clients with circuit breaking
+- **Containerization**: Docker-based deployment
+- **Health Monitoring**: Actuator endpoints for service health
+
+## 💻 Technology Stack
+
+- **Framework**: Spring Boot 3.x
+- **Java Version**: JDK 21
+- **Build Tool**: Gradle 8.x
+- **Database**: MySQL 8.0
+- **Service Communication**: Spring Cloud OpenFeign
+- **Load Balancer**: Nginx
+- **Containerization**: Docker & Docker Compose
+- **Documentation**: SpringDoc OpenAPI 3.0
+- **Monitoring**: Spring Boot Actuator
+
+## 📂 Project Structure
+
+\`\`\`
+microservice-app-main/
+├── user-ms/               # User management service
+│   ├── src/              # Service source code
+│   ├── docker/           # Docker configuration
+│   └── build.gradle      # Service build config
+├── product-ms/           # Product catalog service
+│   ├── src/
+│   ├── docker/
+│   └── build.gradle
+├── order-ms/             # Order processing service
+│   ├── src/
+│   ├── docker/
+│   └── build.gradle
+├── nginx/                # Load balancer configuration
+│   └── nginx.conf       # Nginx routing rules
+├── docker-compose.yml    # Service orchestration
+└── build.gradle         # Root build configuration
+\`\`\`
+
+## 🔧 Prerequisites
+
+- JDK 21
+- Docker & Docker Compose
+- Gradle 8.x
+- MySQL 8.0 (for local development)
+
+## 🚀 Getting Started
+
+1. **Clone the Repository**
+   \`\`\`bash
+   git clone <repository-url>
+   cd microservice-app-main
+   \`\`\`
+
+2. **Build Services**
+   \`\`\`bash
+   ./gradlew clean build
+   \`\`\`
+
+3. **Start Infrastructure**
+   \`\`\`bash
+   docker-compose up --build
+   \`\`\`
+
+4. **Verify Services**
+   ```bash
+   curl http://localhost/health/user
+   curl http://localhost/health/product
+   curl http://localhost/health/order
+   ```
+
+## 🔍 Service Details
+
+### User Service
+- **Port**: 4020
+- **Base URL**: /api/v1/users
+- **Database**: user_db
+- **Key Functions**: User management, authentication
+
+### Product Service
+- **Port**: 4010
+- **Base URL**: /api/v1/products
+- **Database**: product_db
+- **Key Functions**: Product catalog, inventory management
+
+### Order Service
+- **Port**: 4030
+- **Base URL**: /api/v1/orders
+- **Database**: order_db
+- **Key Functions**: Order processing, service orchestration
+
+## 📚 API Documentation
+
+### User Service Endpoints
+- `POST /api/v1/users/createUser` - Create new user
+- `GET /api/v1/users/getUser/{id}` - Get user details
+- `GET /api/v1/users/health` - Service health check
+
+### Product Service Endpoints
+- `POST /api/v1/products/create` - Create product
+- `GET /api/v1/products/get/{id}` - Get product details
+- `PUT /api/v1/products/decreaseStock/{productId}/{quantity}` - Update stock
+- `GET /api/v1/products/health` - Service health check
+
+### Order Service Endpoints
+- `POST /api/v1/orders/create` - Create order
+- `GET /api/v1/orders/getOrderById/{id}` - Get order details
+- `GET /api/v1/orders/health` - Service health check
+
+## ⚙️ Configuration
+
+### Environment Variables
+```yaml
+# Database Configuration
+DB_CONNECTION_IP: localhost
+DB_CONNECTION_PORT: 3306
+DB_CONNECTION_USERNAME: user
+DB_CONNECTION_PASSWORD: password
+
+# Service URLs
+GATEWAY_HOST: http://nginx
 ```
-├── User-ms     # User microservice
-├── Product-ms  # Product microservice
-├── Order-ms    # Order microservice
-├── nginx       # Nginx config used by docker-compose
-├── docker-compose.yml
-└── build.gradle (root) with helper tasks for building Docker images
+
+### Nginx Configuration
+```nginx
+upstream user_service {
+    server user-service-1:4020;
+    server user-service-2:4020;
+}
+# Similar configuration for product and order services
 ```
 
-Each microservice is a Gradle project. The build script generates a Dockerfile and jar in `build/docker/`. Images can be pushed to Docker Hub using credentials from `gradle.properties`.
+## 📊 Monitoring & Health
 
-## Running Locally
-
-Ensure Docker and Docker Compose are installed. To start all databases, services and nginx run:
-
-```bash
-docker-compose up --build
-```
-
-The services will be reachable via nginx on the following ports:
-
-- `http://localhost:4020` – **user-service**
-- `http://localhost:4010` – **product-service**
-- `http://localhost:4030` – **order-service**
+### Health Check Endpoints
+- User Service: http://localhost/health/user
+- Product Service: http://localhost/health/product
+- Order Service: http://localhost/health/order
 
 ### Scaling Services
-
-Docker Compose can run multiple instances of each service. Example:
-
 ```bash
 docker-compose up --scale user-service=2 --scale product-service=2 --scale order-service=2
 ```
 
-Nginx automatically distributes requests between the available instances.
+## 🔧 Troubleshooting
 
-### Configuration
+### Common Issues
 
-Each service has its own MySQL database container. Connection details are configured via environment variables in `docker-compose.yml` and exposed in `src/main/resources/application.yml` of each service.
+1. **Service Connection Failures**
+   - Check service health endpoints
+   - Verify nginx configuration
+   - Ensure services are on the same Docker network
 
-The order service resolves other services via `USER_SERVICE_URL` and `PRODUCT_SERVICE_URL`. By default these point at the nginx container.
+2. **Database Connection Issues**
+   - Verify database credentials
+   - Check database container status
+   - Ensure database initialization completed
 
-## API Overview
+3. **Load Balancing Problems**
+   - Check nginx logs: `docker-compose logs nginx`
+   - Verify service discovery
+   - Check service registration
 
-### User Service (`/api/v1/users`)
-- `POST /createUser` – create a user
-- `GET /getUser/{id}` – get user details by id
+### Debugging Tips
+- Use `docker-compose logs <service-name>` for service logs
+- Check application logs in `/var/log/`
+- Verify network connectivity between services
 
-### Product Service (`/api/v1/products`)
-- `POST /create` – create product
-- `PUT /update/{id}` – update product
-- `DELETE /delete/{id}` – delete product
-- `GET /get/{id}` – fetch single product
-- `GET /getAll` – list all products
-- `POST /increaseStock/{productId}/{qty}` – increase stock quantity
-- `POST /decreaseStock/{productId}/{qty}` – decrease stock quantity
+## 🤝 Contributing
 
-### Order Service (`/api/v1/orders`)
-- `POST /create` – create order
-- `GET /findAll` – list orders
-- `GET /getOrderById/{id}` – fetch order by id
-- `GET /product/{productId}` – retrieve product info via product service
-- `GET /user/{userId}` – retrieve user info via user service
+1. Fork the repository
+2. Create a feature branch
+3. Commit changes
+4. Push to the branch
+5. Create a Pull Request
 
-Swagger UI is enabled in each service and reachable at `/swagger-ui/index.html` on the respective ports when running locally.
+## 📄 License
 
-Health checks are available via Spring Boot Actuator at `/actuator/health`.
-
-## Building Docker Images
-
-Each microservice can build and push its Docker image individually using Gradle tasks defined in the service's `build.gradle`. The root project also provides a helper task to build and push all images:
-
-```bash
-./gradlew buildAllDockerImages
-```
-
-## License
-
-This project is provided as-is for demonstration purposes.
->>>>>>> 699801f (docs: add comprehensive README)
+This project is licensed under the MIT License.
