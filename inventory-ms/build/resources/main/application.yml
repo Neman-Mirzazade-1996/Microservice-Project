@@ -1,0 +1,34 @@
+server:
+  port: 4040
+
+spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DB_CONNECTION_IP:localhost}:${DB_CONNECTION_PORT:3309}/inventory_db?createDatabaseIfNotExist=true
+    username: ${DB_CONNECTION_USERNAME:inventory}
+    password: ${DB_CONNECTION_PASSWORD:password}
+
+  jpa:
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQLDialect
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
+
+application:
+  name: inventory-service
