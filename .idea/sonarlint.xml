@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SonarLintProjectSettings">
+    <option name="moduleMapping">
+      <map>
+        <entry key="MicroserviceProject.Order-ms.main" value="MicroserviceProject.order-ms.main" />
+        <entry key="MicroserviceProject.User-ms.main" value="MicroserviceProject.user-ms.main" />
+        <entry key="MicroserviceProject.product-ms.main" value="MicroserviceProject.product-ms.main" />
+      </map>
+    </option>
+  </component>
+</project>
