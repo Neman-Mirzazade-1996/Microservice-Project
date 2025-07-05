@@ -1,47 +1,43 @@
 package com.neman.orderms.Controller;
 
-import com.neman.orderms.Client.ProductClient;
-import com.neman.orderms.Client.UserClient;
 import com.neman.orderms.Dto.OrderRequestDto;
 import com.neman.orderms.Dto.OrderResponseDto;
-import com.neman.orderms.Dto.ProductResponseDto;
 import com.neman.orderms.Dto.UserResponseDto;
 import com.neman.orderms.Service.OrderService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/orders")
 @RequiredArgsConstructor
 public class OrderController {
-     private final OrderService orderService;
-     private final ProductClient productClient;
+    private final OrderService orderService;
 
-     @PostMapping("/create")
-     public OrderResponseDto createOrder(@RequestBody OrderRequestDto orderRequestDto) {
-         return orderService.createOrder(orderRequestDto);
-     }
+    @PostMapping("/create")
+    public ResponseEntity<OrderResponseDto> createOrder(@RequestBody OrderRequestDto orderRequest) {
+        OrderResponseDto response = orderService.createOrder(orderRequest);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
 
-     @GetMapping("/findAll")
-     public List<OrderResponseDto> getAllOrders() {
-            return orderService.getAllOrders();
-     }
+    @GetMapping("/all")
+    public ResponseEntity<List<OrderResponseDto>> getAllOrders() {
+        List<OrderResponseDto> orders = orderService.getAllOrders();
+        return ResponseEntity.ok(orders);
+    }
 
-     @GetMapping("/getOrderById/{id}")
-     public OrderResponseDto getOrderById(@PathVariable Long id) {
-            return orderService.getOrderById(id);
-     }
-
-
-
-    @GetMapping("/product/{productId}")
-    public ProductResponseDto getProductInfo(@PathVariable Long productId) {
-        return productClient.getProductById(productId);
+    @GetMapping("/get/{id}")
+    public ResponseEntity<OrderResponseDto> getOrderById(@PathVariable Long id) {
+        OrderResponseDto order = orderService.getOrderById(id);
+        return ResponseEntity.ok(order);
     }
 
     @GetMapping("/user/{userId}")
-    public UserResponseDto getUserInfo(@PathVariable Long userId) {
-        return orderService.getUserById(userId);
+    public ResponseEntity<UserResponseDto> getUserById(@PathVariable Long userId) {
+        UserResponseDto user = orderService.getUserById(userId);
+        return ResponseEntity.ok(user);
     }
 }

@@ -1,7 +1,6 @@
-server:
-  port: 4020
-
 spring:
+  application:
+    name: User-ms
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -19,14 +18,16 @@ spring:
       hibernate:
         format_sql: true
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health
-  endpoint:
-    health:
-      show-details: always
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    com.neman.userms: DEBUG
 
 application:
-  name: user-service
+  security:
+    jwt:
+      secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+      expiration: 86400000  # 24 hours
+      refresh-token:
+        expiration: 604800000  # 7 days

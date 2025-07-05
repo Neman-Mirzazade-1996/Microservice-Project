@@ -3,10 +3,12 @@ package com.neman.productms.Controller;
 import com.neman.productms.Dto.ProductRequestDto;
 import com.neman.productms.Dto.ProductResponseDto;
 import com.neman.productms.Dto.ProductUpdateDto;
-import com.neman.productms.Model.Product;
 import com.neman.productms.Service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -14,51 +16,52 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductController {
     private final ProductService productService;
-    @GetMapping("/get/{id}")
-    public ProductResponseDto getProduct(@PathVariable Long id) {
-        return productService.getProductById(id);
-    }
 
     @PostMapping("/create")
-    public ProductResponseDto createProduct(@RequestBody ProductRequestDto dto) {
-        return productService.createProduct(dto);
+    public ResponseEntity<ProductResponseDto> createProduct(@RequestBody ProductRequestDto request) {
+        return new ResponseEntity<>(productService.createProduct(request), HttpStatus.CREATED);
     }
 
     @PutMapping("/update/{id}")
-    public ProductResponseDto updateProduct(@PathVariable Long id, @RequestBody ProductUpdateDto dto) {
-        return productService.updateProduct(id, dto);
+    public ResponseEntity<ProductResponseDto> updateProduct(@PathVariable Long id, @RequestBody ProductUpdateDto request) {
+        return ResponseEntity.ok(productService.updateProduct(id, request));
     }
 
     @DeleteMapping("/delete/{id}")
-    public void deleteProduct(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
+        return ResponseEntity.noContent().build();
     }
 
-
-
-    @GetMapping("/getAll")
-    public List<ProductResponseDto> getAllProducts() {
-        return productService.getAllProducts();
+    @GetMapping("/get/{id}")
+    public ResponseEntity<ProductResponseDto> getProductById(@PathVariable Long id) {
+        return ResponseEntity.ok(productService.getProductById(id));
     }
 
-    @PostMapping("/increaseStock/{productId}/{quantity}")
-    public void increaseStock(@PathVariable Long productId, @PathVariable int quantity) {
-        productService.increaseStock(productId, quantity);
+    @GetMapping("/get-all")
+    public ResponseEntity<List<ProductResponseDto>> getAllProducts() {
+        return ResponseEntity.ok(productService.getAllProducts());
     }
 
-    @PostMapping("/decreaseStock/{productId}/{quantity}")
-    public void decreaseStock(@PathVariable Long productId, @PathVariable int quantity) {
-        productService.decreaseStock(productId, quantity);
+    @PostMapping("/{id}/increase-stock")
+    public ResponseEntity<Void> increaseStock(@PathVariable Long id, @RequestParam int quantity) {
+        productService.increaseStock(id, quantity);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{id}/decrease-stock")
+    public ResponseEntity<Void> decreaseStock(@PathVariable Long id, @RequestParam int quantity) {
+        productService.decreaseStock(id, quantity);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/search")
-    public List<ProductResponseDto> search(
+    public ResponseEntity<List<ProductResponseDto>> searchProducts(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String brand,
             @RequestParam(required = false) Double minPrice,
             @RequestParam(required = false) Double maxPrice,
-            @RequestParam(required = false) String status
-    ) {
-        return productService.searchProducts(name, brand, minPrice, maxPrice, status);
+            @RequestParam(required = false) String status) {
+        return ResponseEntity.ok(productService.searchProducts(name, brand, minPrice, maxPrice, status));
     }
 }
