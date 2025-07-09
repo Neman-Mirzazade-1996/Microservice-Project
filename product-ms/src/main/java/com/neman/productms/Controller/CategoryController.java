@@ -15,17 +15,17 @@ import java.util.List;
 public class CategoryController {
     private final CategoryService categoryService;
 
-    @PostMapping("/create")
+    @PostMapping("/admin/create")
     public CategoryResponseDto create(@RequestBody CategoryRequestDto dto) {
         return categoryService.createCategory(dto);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/admin/update/{id}")
     public CategoryResponseDto update(@PathVariable Long id, @RequestBody CategoryRequestDto dto) {
         return categoryService.updateCategory(id, dto);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/admin/delete/{id}")
     public void delete(@PathVariable Long id) {
         categoryService.deleteCategory(id);
     }

@@ -17,17 +17,17 @@ import java.util.List;
 public class ProductController {
     private final ProductService productService;
 
-    @PostMapping("/create")
+    @PostMapping("/admin/create")
     public ResponseEntity<ProductResponseDto> createProduct(@RequestBody ProductRequestDto request) {
         return new ResponseEntity<>(productService.createProduct(request), HttpStatus.CREATED);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/admin/update/{id}")
     public ResponseEntity<ProductResponseDto> updateProduct(@PathVariable Long id, @RequestBody ProductUpdateDto request) {
         return ResponseEntity.ok(productService.updateProduct(id, request));
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/admin/delete/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
@@ -43,13 +43,13 @@ public class ProductController {
         return ResponseEntity.ok(productService.getAllProducts());
     }
 
-    @PostMapping("/{id}/increase-stock")
+    @PostMapping("/admin/{id}/increase-stock")
     public ResponseEntity<Void> increaseStock(@PathVariable Long id, @RequestParam int quantity) {
         productService.increaseStock(id, quantity);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/{id}/decrease-stock")
+    @PostMapping("/admin/{id}/decrease-stock")
     public ResponseEntity<Void> decreaseStock(@PathVariable Long id, @RequestParam int quantity) {
         productService.decreaseStock(id, quantity);
         return ResponseEntity.ok().build();
