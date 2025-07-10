@@ -14,42 +14,48 @@ spring:
           lower-case-service-id: true
       routes:
         - id: user-service
-          uri: lb://user-service
+          uri: http://localhost:4020
           predicates:
-            - Path=/user/**
+            - Path=/user-service/**
           filters:
-            - StripPrefix=1
-            - name: JwtAuthenticationFilter
+            - RewritePath=/user-service/(?<segment>.*), /$\{segment}
 
         - id: product-service
-          uri: lb://product-service
+          uri: http://localhost:4010
           predicates:
-            - Path=/product/**
+            - Path=/product-service/**
           filters:
-            - StripPrefix=1
-            - name: JwtAuthenticationFilter
+            - RewritePath=/product-service/(?<segment>.*), /$\{segment}
 
         - id: order-service
-          uri: lb://order-service
+          uri: http://localhost:4030
           predicates:
-            - Path=/order/**
+            - Path=/order-service/**
           filters:
-            - StripPrefix=1
-            - name: JwtAuthenticationFilter
+            - RewritePath=/order-service/(?<segment>.*), /$\{segment}
+
+        # Swagger UI route
+        - id: openapi
+          uri: http://localhost:${server.port}
+          predicates:
+            - Path=/swagger-ui/**,/v3/api-docs/**,/webjars/**
 
 springdoc:
   api-docs:
-    path: /v3/api-docs
     enabled: true
   swagger-ui:
-    path: /swagger-ui.html
     enabled: true
+    path: /swagger-ui.html
     config-url: /v3/api-docs/swagger-config
     urls:
       - url: /v3/api-docs
-        name: API Gateway
-  show-actuator: true
-  enable-native-support: true
+        name: Gateway API
+      - url: /user-service/v3/api-docs
+        name: User Service
+      - url: /product-service/v3/api-docs
+        name: Product Service
+      - url: /order-service/v3/api-docs
+        name: Order Service
+  cache:
+    disabled: true
 
-server:
-  port: 8080

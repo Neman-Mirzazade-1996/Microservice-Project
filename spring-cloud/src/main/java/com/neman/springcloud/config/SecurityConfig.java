@@ -9,8 +9,9 @@ import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
-import javax.crypto.spec.SecretKeySpec;
+
 import java.nio.charset.StandardCharsets;
+import javax.crypto.spec.SecretKeySpec;
 
 @Configuration
 @EnableWebFluxSecurity
@@ -25,12 +26,22 @@ public class SecurityConfig {
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchanges -> exchanges
                     .pathMatchers(
-                        "/user-service/auth/**",
-                        "/swagger-ui/**",
-                        "/swagger-ui/index.html",
-                        "/v3/api-docs/**",
-                        "/webjars/**",
-                        "/swagger-resources/**"
+                            "/user-service/auth/**",
+                            "/swagger-ui/**",
+                            "/swagger-ui/index.html",
+                            "/webjars/**",
+                            "/swagger-resources/**",
+                            "/v3/api-docs",
+                            "/v3/api-docs/**",
+                            "/v3/api-docs/swagger-config",
+                            "/swagger-ui.html",
+                            "/*/v3/api-docs",
+                            "/*/swagger-ui.html",
+                            "/*/swagger-ui/**",
+                            "/actuator/**",
+                            "/user-service/v3/api-docs/**",
+                            "/product-service/v3/api-docs/**",
+                            "/order-service/v3/api-docs/**"
                     ).permitAll()
                         // Admin only endpoints - Product
                         .pathMatchers(HttpMethod.POST, "/product-service/admin/**").hasRole("ADMIN")
