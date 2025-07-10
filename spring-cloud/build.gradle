@@ -13,6 +13,10 @@ java {
 	}
 }
 
+bootJar {
+	mainClass = 'com.neman.springcloud.SpringCloudApplication'
+}
+
 repositories {
 	mavenCentral()
 }
