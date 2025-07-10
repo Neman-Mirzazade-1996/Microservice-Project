@@ -3,4 +3,5 @@ rootProject.name = 'MicroserviceProject'
 include 'user-ms'
 include 'order-ms'
 include 'product-ms'
+include 'spring-cloud'
 

@@ -129,9 +129,9 @@ services:
       DB_CONNECTION_PORT: 3306
       DB_CONNECTION_USERNAME: order
       DB_CONNECTION_PASSWORD: password
-      USER_SERVICE_URL: http://user-service-1:4020
-      PRODUCT_SERVICE_URL: http://product-service-1:4010
-      GATEWAY_HOST: http://nginx
+      USER_SERVICE_URL: http://api-gateway:8080
+      PRODUCT_SERVICE_URL: http://api-gateway:8080
+      GATEWAY_HOST: http://api-gateway:8080
     networks:
       - app-network
     healthcheck:
@@ -158,9 +158,9 @@ services:
       DB_CONNECTION_PORT: 3306
       DB_CONNECTION_USERNAME: order
       DB_CONNECTION_PASSWORD: password
-      USER_SERVICE_URL: http://user-service-1:4020
-      PRODUCT_SERVICE_URL: http://product-service-1:4010
-      GATEWAY_HOST: http://nginx
+      USER_SERVICE_URL: http://api-gateway:8080
+      PRODUCT_SERVICE_URL: http://api-gateway:8080
+      GATEWAY_HOST: http://api-gateway:8080
     networks:
       - app-network
     healthcheck:
@@ -241,6 +241,26 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+
+  api-gateway:
+    image: neman1234/api-gateway:latest
+    container_name: api-gateway
+    build:
+      context: ./spring-cloud
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - nginx
+    networks:
+      - app-network
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
 volumes:
   user_data:

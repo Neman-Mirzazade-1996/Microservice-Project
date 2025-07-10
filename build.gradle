@@ -12,13 +12,15 @@ plugins {
 def javaProjects = [
         project(':user-ms'),
         project(':product-ms'),
-        project(':order-ms')
+        project(':order-ms'),
+        project(':spring-cloud')
 ]
 
 def subProjects = [
         project(':user-ms'),
         project(':product-ms'),
         project(':order-ms'),
+        project(':spring-cloud')
 ]
 
 group = 'com.neman'

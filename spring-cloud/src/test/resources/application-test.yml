@@ -61,4 +61,3 @@ springdoc:
         name: Order Service
   cache:
     disabled: true
-
