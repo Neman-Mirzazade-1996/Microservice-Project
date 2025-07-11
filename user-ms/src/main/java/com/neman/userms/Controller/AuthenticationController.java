@@ -3,7 +3,7 @@ package com.neman.userms.Controller;
 import com.neman.userms.Dto.auth.AuthenticationRequest;
 import com.neman.userms.Dto.auth.AuthenticationResponse;
 import com.neman.userms.Dto.auth.RegisterRequest;
-import com.neman.userms.Service.ServiceImpl.AuthenticationService;
+import com.neman.userms.Service.ServiceImpl.KeycloakAuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -20,22 +20,22 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Authentication", description = "Authentication management APIs")
 public class AuthenticationController {
 
-    private final AuthenticationService authService;
+    private final KeycloakAuthenticationService keycloakAuthService;
 
     @PostMapping("/register")
-    @Operation(summary = "Register new user")
+    @Operation(summary = "Register new user in Keycloak")
     public ResponseEntity<String> register(
             @Valid @RequestBody RegisterRequest request
     ) {
-        authService.register(request);
-        return ResponseEntity.ok("User registered successfully");
+        keycloakAuthService.register(request);
+        return ResponseEntity.ok("User registered successfully in Keycloak");
     }
 
     @PostMapping("/login")
-    @Operation(summary = "Authenticate user and get token")
+    @Operation(summary = "Authenticate user and get Keycloak token")
     public ResponseEntity<AuthenticationResponse> authenticate(
             @Valid @RequestBody AuthenticationRequest request
     ) {
-        return ResponseEntity.ok(authService.authenticate(request));
+        return ResponseEntity.ok(keycloakAuthService.authenticate(request));
     }
 }
