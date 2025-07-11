@@ -1,28 +1,8 @@
-import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
-import com.bmuschko.gradle.docker.tasks.image.DockerPushImage
-import com.bmuschko.gradle.docker.tasks.image.Dockerfile
-
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.2.5'
-    id 'io.spring.dependency-management' version '1.1.7'
-    id 'com.bmuschko.docker-remote-api' version '7.0.0'
 }
 
-def javaProjects = [
-        project(':user-ms'),
-        project(':product-ms'),
-        project(':order-ms')
-]
-
-def subProjects = [
-        project(':user-ms'),
-        project(':product-ms'),
-        project(':order-ms'),
-]
-
 group = 'com.neman'
-
 
 allprojects {
     def hash= 'git rev-parse --short HEAD'.execute().text.trim()  //tag
@@ -35,7 +15,6 @@ allprojects {
     }
 
     apply plugin: 'java'
-    apply plugin: 'com.bmuschko.docker-remote-api'
 
     java {
         toolchain {
@@ -48,82 +27,4 @@ subprojects {
     dependencies {
 
     }
-}
-
-
-configure(javaProjects){
-    bootJar {
-        enabled = true
-    }
-
-    springBoot {
-        mainClass = project.hasProperty('mainClass') ? project.mainClass : ''
-    }
-
-    def dockerImageName = "$dockerRepoUrl/service-${project.name}:${version}"
-    def dockerDir="${projectDir}/docker"
-
-    tasks.register('createDockerDir'){
-        doLast {
-            mkdir dockerDir
-        }
-    }
-
-    tasks.register('copyJarToDockerDir', Copy){
-        dependsOn assemble, createDockerDir
-        from("$projectDir/build/libs") {
-            include "*.jar"
-        }
-        into dockerDir
-        rename { fileName ->
-            fileName.replace(fileName, "${project.name}.jar")
-        }
-        duplicatesStrategy = DuplicatesStrategy.INCLUDE
-    }
-
-    tasks.register('dockerfile', Dockerfile) {
-        dependsOn copyJarToDockerDir
-        destFile.set(file("${dockerDir}/Dockerfile"))
-        from("openjdk:21-jdk")
-        copyFile("${project.name}.jar", "/app/${project.name}.jar")
-        workingDir("/app")
-        entryPoint("java")
-        defaultCommand("-Duser.timezone=Asia/Baku", "-jar", "/app/${project.name}.jar")
-    }
-
-    tasks.register('dockerBuild', DockerBuildImage) {
-        dependsOn dockerfile
-        inputDir.set(file(dockerDir))
-        dockerFile.set(tasks.dockerfile.destFile)
-        images.add(dockerImageName)
-
-        doLast {
-            project.exec {
-                workingDir = file(dockerDir)
-                commandLine 'docker', 'buildx', 'build', '--rm', '--platform', 'linux/amd64', '--file', 'Dockerfile', '-t', dockerImageName, '.'
-            }
-            project.exec {
-                commandLine 'docker', 'image', 'prune', '-f'
-            }
-        }
-
-    }
-
-    tasks.register('dockerPush', DockerPushImage) {
-        dependsOn dockerBuild
-        images.add(dockerImageName)
-        registryCredentials {
-            username = dockerHubUsername
-            password = dockerHubPassword
-            email = dockerHubEmail
-        }
-    }
-
-    tasks.register('buildAndPush') {
-        dependsOn dockerPush
-        doLast {
-            println "Successfully built and pushed the Docker image: $dockerImageName"
-        }
-    }
-
 }
