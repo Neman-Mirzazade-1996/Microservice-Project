@@ -18,6 +18,14 @@ spring:
       hibernate:
         format_sql: true
 
+# Keycloak configuration
+keycloak:
+  auth-server-url: http://my-keycloak:8080
+  realm: microservice-realm
+  client-id: microservice-client
+  admin:
+    username: admin
+    password: admin
 
 logging:
   level:
