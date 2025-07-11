@@ -1,0 +1,9 @@
+# Logging configuration
+logging:
+  level:
+    root: INFO
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+    org.keycloak: DEBUG
+    com.neman.keycloak: DEBUG
+

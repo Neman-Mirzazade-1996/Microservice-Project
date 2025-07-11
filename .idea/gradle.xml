@@ -65,6 +65,14 @@
         </option>
       </GradleProjectSettings>
       <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/key-cloak" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/key-cloak" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/payment-ms" />
         <option name="modules">
           <set>

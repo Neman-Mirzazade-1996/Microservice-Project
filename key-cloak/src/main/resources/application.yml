@@ -1,0 +1,24 @@
+spring:
+  profiles:
+    include:
+      - common
+      - db
+      - logging
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/microservices-realm
+          jwk-set-uri: http://localhost:8080/realms/microservices-realm/protocol/openid-connect/certs
+
+server:
+  servlet:
+    context-path: /api
+  port: 8081
+
+keycloak:
+  realm: microservices-realm
+  auth-server-url: http://localhost:8080
+  resource: microservices-app
+  public-client: false
+  bearer-only: true

@@ -27,7 +27,7 @@ logging:
 application:
   security:
     jwt:
-      secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+      secret-key: 92847365102938475610293847561029384756102938475610293847561029384756
       expiration: 86400000  # 24 hours
       refresh-token:
         expiration: 604800000  # 7 days
