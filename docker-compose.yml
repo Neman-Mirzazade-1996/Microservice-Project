@@ -241,7 +241,7 @@ services:
       context: ./spring-cloud/docker
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "8081:8080"
     depends_on:
       my-keycloak:
         condition: service_healthy
@@ -324,8 +324,8 @@ services:
     command:
       - start-dev
     ports:
-      - 8080:8080
-      - 8443:8443
+      - "8080:8080"
+      - "8443:8443"
     networks:
       - app-network
     depends_on:
