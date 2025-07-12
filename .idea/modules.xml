@@ -5,6 +5,8 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/MicroserviceProject.order-ms.main.iml" filepath="$PROJECT_DIR$/.idea/modules/MicroserviceProject.order-ms.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1907262825/MicroserviceProject.product-ms.main.iml" filepath="$PROJECT_DIR$/.idea/modules/-1907262825/MicroserviceProject.product-ms.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/1256046709/MicroserviceProject.user-ms.main.iml" filepath="$PROJECT_DIR$/.idea/modules/1256046709/MicroserviceProject.user-ms.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/inventory-ms.main.iml" filepath="$PROJECT_DIR$/.idea/modules/inventory-ms.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/payment-ms.main.iml" filepath="$PROJECT_DIR$/.idea/modules/payment-ms.main.iml" />
     </modules>
   </component>
 </project>

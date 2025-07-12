@@ -11,8 +11,10 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/key-cloak" />
             <option value="$PROJECT_DIR$/order-ms" />
             <option value="$PROJECT_DIR$/product-ms" />
+            <option value="$PROJECT_DIR$/spring-cloud" />
             <option value="$PROJECT_DIR$/user-ms" />
           </set>
         </option>
@@ -24,8 +26,10 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/key-cloak" />
             <option value="$PROJECT_DIR$/order-ms" />
             <option value="$PROJECT_DIR$/product-ms" />
+            <option value="$PROJECT_DIR$/spring-cloud" />
             <option value="$PROJECT_DIR$/user-ms" />
           </set>
         </option>
@@ -37,8 +41,10 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/key-cloak" />
             <option value="$PROJECT_DIR$/order-ms" />
             <option value="$PROJECT_DIR$/product-ms" />
+            <option value="$PROJECT_DIR$/spring-cloud" />
             <option value="$PROJECT_DIR$/user-ms" />
           </set>
         </option>
@@ -50,8 +56,10 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/key-cloak" />
             <option value="$PROJECT_DIR$/order-ms" />
             <option value="$PROJECT_DIR$/product-ms" />
+            <option value="$PROJECT_DIR$/spring-cloud" />
             <option value="$PROJECT_DIR$/user-ms" />
           </set>
         </option>

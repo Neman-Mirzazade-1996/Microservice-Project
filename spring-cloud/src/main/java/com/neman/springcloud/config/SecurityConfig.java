@@ -1,34 +1,30 @@
 package com.neman.springcloud.config;
 
-import io.jsonwebtoken.io.Decoders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
-import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.web.server.SecurityWebFilterChain;
-import org.springframework.core.convert.converter.Converter;
-import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverter;
-import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
-import reactor.core.publisher.Mono;
+import org.springframework.security.web.server.SecurityWebFilterChain;
 import reactor.core.publisher.Flux;
-import javax.crypto.SecretKey;
-import io.jsonwebtoken.security.Keys;
+import reactor.core.publisher.Mono;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Configuration
 @EnableWebFluxSecurity
 public class SecurityConfig {
     private static final Logger log = LoggerFactory.getLogger(SecurityConfig.class);
-
-    @Value("${spring.application.security.jwt.secret-key}")
-    private String jwtSecret;
 
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
@@ -51,7 +47,9 @@ public class SecurityConfig {
                             "/actuator/**",
                             "/user-service/v3/api-docs/**",
                             "/product-service/v3/api-docs/**",
-                            "/order-service/v3/api-docs/**"
+                            "/order-service/v3/api-docs/**",
+                            "/auth/**",
+                            "/health/**"
                     ).permitAll()
 
                         // Admin only endpoints - Product Management
@@ -72,44 +70,43 @@ public class SecurityConfig {
                     .anyExchange().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
-                    .jwt(jwt -> {
-                        jwt.jwtDecoder(jwtDecoder());
-                        jwt.jwtAuthenticationConverter(jwtAuthenticationConverter());
-                    })
+                    .jwt(jwt -> jwt.jwtAuthenticationConverter(keycloakJwtAuthenticationConverter()))
                 );
         return http.build();
     }
 
     @Bean
-    public ReactiveJwtDecoder jwtDecoder() {
-        try {
-            log.debug("Using JWT secret key for decoding: {}", jwtSecret);
-
-            byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
-            SecretKey secretKey = Keys.hmacShaKeyFor(keyBytes);
-
-            return NimbusReactiveJwtDecoder.withSecretKey(secretKey).build();
-        } catch (Exception e) {
-            log.error("Failed to create JWT decoder: {}", e.getMessage(), e);
-            throw new RuntimeException("Failed to create JWT decoder", e);
-        }
-    }
-
-    @Bean
-    public Converter<Jwt, Mono<AbstractAuthenticationToken>> jwtAuthenticationConverter() {
+    public Converter<Jwt, Mono<org.springframework.security.authentication.AbstractAuthenticationToken>> keycloakJwtAuthenticationConverter() {
         ReactiveJwtAuthenticationConverter converter = new ReactiveJwtAuthenticationConverter();
-
-        // Configure authorities converter to extract roles from the right claim
-        JwtGrantedAuthoritiesConverter authoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        authoritiesConverter.setAuthoritiesClaimName("authorities");
-        authoritiesConverter.setAuthorityPrefix(""); // No prefix as "ROLE_" is already in the claim
-
-        converter.setJwtGrantedAuthoritiesConverter(jwt ->
-            Mono.fromCallable(() -> authoritiesConverter.convert(jwt))
-                .flatMapMany(authorities -> Flux.fromIterable(authorities))
-                .doOnNext(authority -> log.debug("Extracted authority: {}", authority))
-        );
-
+        
+        converter.setJwtGrantedAuthoritiesConverter(jwt -> {
+            log.debug("Processing JWT with claims: {}", jwt.getClaims());
+            
+            // Extract realm roles from Keycloak JWT
+            Map<String, Object> realmAccess = jwt.getClaimAsMap("realm_access");
+            Collection<String> roles = null;
+            
+            if (realmAccess != null && realmAccess.containsKey("roles")) {
+                roles = (Collection<String>) realmAccess.get("roles");
+            }
+            
+            if (roles == null || roles.isEmpty()) {
+                log.debug("No realm roles found in JWT");
+                return Flux.empty();
+            }
+            
+            List<GrantedAuthority> authorities = roles.stream()
+                    .map(role -> {
+                        String authority = role.startsWith("ROLE_") ? role : "ROLE_" + role.toUpperCase();
+                        log.debug("Mapped role '{}' to authority '{}'", role, authority);
+                        return new SimpleGrantedAuthority(authority);
+                    })
+                    .collect(Collectors.toList());
+            
+            log.debug("Extracted authorities: {}", authorities);
+            return Flux.fromIterable(authorities);
+        });
+        
         return converter;
     }
 }

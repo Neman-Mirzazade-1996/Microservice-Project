@@ -12,7 +12,9 @@ plugins {
 def javaProjects = [
         project(':user-ms'),
         project(':product-ms'),
-        project(':order-ms')
+        project(':order-ms'),
+        project(':key-cloak'),
+        project(':spring-cloud')
 ]
 
 def subProjects = [
@@ -127,3 +129,4 @@ configure(javaProjects){
     }
 
 }
+

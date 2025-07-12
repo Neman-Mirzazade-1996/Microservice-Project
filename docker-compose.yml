@@ -62,7 +62,7 @@ services:
       retries: 5
 
   user-service-1:
-    image: neman1234/service-user-ms:1.0.47bab6c
+    image: neman1234/service-user-ms:1.0.741b460
     container_name: user-service-1
     hostname: user-service-1
     build:
@@ -73,11 +73,18 @@ services:
     depends_on:
       user-db:
         condition: service_healthy
+      my-keycloak:
+        condition: service_healthy
     environment:
       DB_CONNECTION_IP: user-db
       DB_CONNECTION_PORT: 3306
       DB_CONNECTION_USERNAME: user
       DB_CONNECTION_PASSWORD: password
+      KEYCLOAK_AUTH_SERVER_URL: http://my-keycloak:8080
+      KEYCLOAK_REALM: microservice-realm
+      KEYCLOAK_CLIENT_ID: microservice-client
+      KEYCLOAK_ADMIN_USERNAME: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
     networks:
       - app-network
     healthcheck:
@@ -87,7 +94,7 @@ services:
       retries: 5
 
   user-service-2:
-    image: neman1234/service-user-ms:1.0.47bab6c
+    image: neman1234/service-user-ms:1.0.741b460
     container_name: user-service-2
     hostname: user-service-2
     build:
@@ -98,11 +105,18 @@ services:
     depends_on:
       user-db:
         condition: service_healthy
+      my-keycloak:
+        condition: service_healthy
     environment:
       DB_CONNECTION_IP: user-db
       DB_CONNECTION_PORT: 3306
       DB_CONNECTION_USERNAME: user
       DB_CONNECTION_PASSWORD: password
+      KEYCLOAK_AUTH_SERVER_URL: http://my-keycloak:8080
+      KEYCLOAK_REALM: microservice-realm
+      KEYCLOAK_CLIENT_ID: microservice-client
+      KEYCLOAK_ADMIN_USERNAME: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
     networks:
       - app-network
     healthcheck:
@@ -113,7 +127,7 @@ services:
 
 
   order-service-1:
-    image: neman1234/service-order-ms:1.0.47bab6c
+    image: neman1234/service-order-ms:1.0.741b460
     container_name: order-service-1
     hostname: order-service-1
     build:
@@ -142,7 +156,7 @@ services:
 
 
   order-service-2:
-    image: neman1234/service-order-ms:1.0.47bab6c
+    image: neman1234/service-order-ms:1.0.741b460
     container_name: order-service-2
     hostname: order-service-2
     build:
@@ -171,7 +185,7 @@ services:
 
 
   product-service-1:
-    image: neman1234/service-product-ms:1.0.47bab6c
+    image: neman1234/service-product-ms:1.0.741b460
     container_name: product-service-1
     hostname: product-service-1
     build:
@@ -196,7 +210,7 @@ services:
       retries: 5
 
   product-service-2:
-    image: neman1234/service-product-ms:1.0.47bab6c
+    image: neman1234/service-product-ms:1.0.741b460
     container_name: product-service-2
     hostname: product-service-2
     build:
@@ -220,6 +234,34 @@ services:
       timeout: 10s
       retries: 5
 
+  spring-cloud-gateway:
+    image: neman1234/spring-cloud-gateway:latest
+    container_name: spring-cloud-gateway
+    build:
+      context: ./spring-cloud/docker
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      my-keycloak:
+        condition: service_healthy
+      user-service-1:
+        condition: service_healthy
+      product-service-1:
+        condition: service_healthy
+      order-service-1:
+        condition: service_healthy
+    environment:
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://my-keycloak:8080/realms/microservice-realm
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://my-keycloak:8080/realms/microservice-realm/protocol/openid-connect/certs
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
   nginx:
     image: nginx:latest
     container_name: nginx
@@ -230,6 +272,7 @@ services:
       - product-service-2
       - order-service-1
       - order-service-2
+      - spring-cloud-gateway
     ports:
       - "80:80"
     volumes:
@@ -260,9 +303,8 @@ services:
       retries: 5
 
 
-
   my-keycloak:
-    image: quay.io/keycloak/keycloak:24.0.0
+    image: quay.io/keycloak/keycloak:latest
     container_name: my-keycloak
     environment:
       KC_DB: postgres
@@ -274,8 +316,11 @@ services:
       KC_HOSTNAME_STRICT_HTTPS: false
       KC_HTTP_ENABLED: "true"
       KC_PROXY: edge
-      KEY_CLOAK_ADMIN: admin
-      KEY_CLOAK_ADMIN_PASSWORD: admin
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HEALTH_ENABLED: "true"
+      KC_METRICS_ENABLED: "true"
+      JAVA_OPTS: "-Xms256m -Xmx512m"
     command:
       - start-dev
     ports:
@@ -284,13 +329,41 @@ services:
     networks:
       - app-network
     depends_on:
-        postgres:
-          condition: service_healthy
+      postgres:
+        condition: service_started
     healthcheck:
-        test: [ "CMD", "curl", "-f", "http://localhost:8080/auth/realms/master" ]  # Düzəliş: daxili port 8080
-        interval: 30s
-        timeout: 10s
-        retries: 5
+      test: ["CMD", "/opt/keycloak/bin/kc.sh", "show-config"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  keycloak-setup:
+    container_name: keycloak-setup
+    build:
+      context: ./key-cloak/docker
+      dockerfile: Dockerfile
+    depends_on:
+      my-keycloak:
+        condition: service_healthy
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 5
+        window: 120s
+    environment:
+      KEYCLOAK_AUTH_SERVER_URL: http://my-keycloak:8080
+      KEYCLOAK_ADMIN_USERNAME: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://my-keycloak:8080/health/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
 
 volumes:
