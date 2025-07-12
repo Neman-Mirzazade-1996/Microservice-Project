@@ -60,6 +60,7 @@ services:
       retries: 5
 
   user-service-1:
+    image: user-service:latest
     container_name: user-service-1
     hostname: user-service-1
     build:
@@ -91,6 +92,7 @@ services:
       retries: 5
 
   user-service-2:
+    image: user-service:latest
     container_name: user-service-2
     hostname: user-service-2
     build:
@@ -123,6 +125,7 @@ services:
 
 
   order-service-1:
+    image: order-service:latest
     container_name: order-service-1
     hostname: order-service-1
     build:
@@ -151,6 +154,7 @@ services:
 
 
   order-service-2:
+    image: order-service:latest
     container_name: order-service-2
     hostname: order-service-2
     build:
@@ -179,6 +183,7 @@ services:
 
 
   product-service-1:
+    image: product-service:latest
     container_name: product-service-1
     hostname: product-service-1
     build:
@@ -203,6 +208,7 @@ services:
       retries: 5
 
   product-service-2:
+    image: product-service:latest
     container_name: product-service-2
     hostname: product-service-2
     build:
@@ -227,6 +233,7 @@ services:
       retries: 5
 
   spring-cloud-gateway:
+    image: spring-cloud-gateway:latest
     container_name: spring-cloud-gateway
     build:
       context: ./spring-cloud/docker
@@ -330,6 +337,7 @@ services:
       start_period: 30s
 
   keycloak-setup:
+    image: keycloak/keycloak-setup:latest
     container_name: keycloak-setup
     build:
       context: ./key-cloak/docker
