@@ -10,8 +10,8 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan(basePackages = {
     "com.neman.springcloud",
     "com.neman.springcloud.config",
-    "com.neman.springcloud.util",
-    "com.neman.springcloud.validator"
+//    "com.neman.springcloud.util",
+//    "com.neman.springcloud.validator"
 })
 public class SpringCloudApplication {
 

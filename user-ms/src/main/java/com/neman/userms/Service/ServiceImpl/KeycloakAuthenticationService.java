@@ -30,7 +30,7 @@ import java.util.Map;
 @Slf4j
 public class KeycloakAuthenticationService {
 
-    @Value("${keycloak.auth-server-url:http://my-keycloak:8080}")
+    @Value("${keycloak.auth-server-url:http://localhost:8080}")
     private String keycloakServerUrl;
 
     @Value("${keycloak.realm:microservice-realm}")

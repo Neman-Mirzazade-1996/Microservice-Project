@@ -78,7 +78,7 @@ services:
       DB_CONNECTION_PORT: 3306
       DB_CONNECTION_USERNAME: user
       DB_CONNECTION_PASSWORD: password
-      KEYCLOAK_AUTH_SERVER_URL: http://my-keycloak:8080
+      KEYCLOAK_AUTH_SERVER_URL: http://localhost:8080
       KEYCLOAK_REALM: microservice-realm
       KEYCLOAK_CLIENT_ID: microservice-client
       KEYCLOAK_ADMIN_USERNAME: admin
@@ -86,10 +86,11 @@ services:
     networks:
       - app-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:4020/api/v1/users/health"]
+      test: [ "CMD", "curl", "-f", "http://localhost:4020/actuator/health/liveness" ]
       interval: 30s
       timeout: 10s
       retries: 5
+      start_period: 60s
 
   user-service-2:
     image: user-service:latest
@@ -110,7 +111,7 @@ services:
       DB_CONNECTION_PORT: 3306
       DB_CONNECTION_USERNAME: user
       DB_CONNECTION_PASSWORD: password
-      KEYCLOAK_AUTH_SERVER_URL: http://my-keycloak:8080
+      KEYCLOAK_AUTH_SERVER_URL: http://localhost:8080
       KEYCLOAK_REALM: microservice-realm
       KEYCLOAK_CLIENT_ID: microservice-client
       KEYCLOAK_ADMIN_USERNAME: admin
@@ -118,10 +119,11 @@ services:
     networks:
       - app-network
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:4020/api/v1/users/health" ]
+      test: [ "CMD", "curl", "-f", "http://localhost:4020/actuator/health/liveness" ]
       interval: 30s
       timeout: 10s
       retries: 5
+      start_period: 60s
 
 
   order-service-1:
@@ -255,10 +257,11 @@ services:
     networks:
       - app-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8085/actuator/health"]
       interval: 30s
       timeout: 10s
       retries: 5
+      start_period: 30s
 
   nginx:
     image: nginx:latest
@@ -282,9 +285,11 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 30s
 
   postgres:
     image: postgres:13
+    container_name: postgres
     environment:
       POSTGRES_DB: keycloak
       POSTGRES_USER: keycloak
@@ -299,6 +304,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 30s
 
 
   my-keycloak:
@@ -309,7 +315,7 @@ services:
       KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
       KC_DB_USERNAME: keycloak
       KC_DB_PASSWORD: password
-      KC_HOSTNAME: my-keycloak
+      KC_HOSTNAME: localhost
       KC_HOSTNAME_STRICT: false
       KC_HOSTNAME_STRICT_HTTPS: false
       KC_HTTP_ENABLED: "true"
@@ -328,13 +334,13 @@ services:
       - app-network
     depends_on:
       postgres:
-        condition: service_started
+        condition: service_healthy
     healthcheck:
-      test: ["CMD", "/opt/keycloak/bin/kc.sh", "show-config"]
+      test: ["CMD", "/opt/keycloak/bin/kc.sh", "show-config", "health-ready"]
       interval: 15s
       timeout: 10s
       retries: 5
-      start_period: 30s
+      start_period: 120s
 
   keycloak-setup:
     image: keycloak/keycloak-setup:latest

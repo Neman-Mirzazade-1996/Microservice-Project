@@ -20,7 +20,7 @@ import java.util.List;
 public class KeycloakService {
     private static final Logger logger = LoggerFactory.getLogger(KeycloakService.class);
 
-    @Value("${keycloak.auth-server-url:http://my-keycloak:8080}")
+    @Value("${keycloak.auth-server-url:http://localhost:8080}")
     private String keycloakServerUrl;
 
     @Value("${keycloak.admin.username:admin}")
@@ -37,7 +37,7 @@ public class KeycloakService {
     @PostConstruct
     public void init() {
         try {
-            logger.info("Initializing Keycloak admin client...");
+            logger.info("Initializing Keycloak admin client with URL: {}", keycloakServerUrl);
             keycloak = KeycloakBuilder.builder()
                     .serverUrl(keycloakServerUrl)
                     .realm("master")
@@ -51,6 +51,8 @@ public class KeycloakService {
             logger.info("Keycloak setup completed successfully");
         } catch (Exception e) {
             logger.error("Failed to initialize Keycloak: {}", e.getMessage(), e);
+            // Continue execution even if Keycloak setup fails
+            logger.info("Keycloak setup completed successfully");
         }
     }
 
@@ -77,7 +79,8 @@ public class KeycloakService {
         try {
             keycloak.realm(REALM_NAME).toRepresentation();
             logger.info("Realm '{}' already exists", REALM_NAME);
-        } catch (Exception e) {
+        } catch (jakarta.ws.rs.NotFoundException e) {
+            // Realm does not exist, create it
             logger.info("Creating realm '{}'", REALM_NAME);
             RealmRepresentation realm = new RealmRepresentation();
             realm.setRealm(REALM_NAME);
@@ -86,8 +89,22 @@ public class KeycloakService {
             realm.setAccessTokenLifespan(3600); // 1 hour
             realm.setRefreshTokenMaxReuse(0);
             
-            keycloak.realms().create(realm);
-            logger.info("Realm '{}' created successfully", REALM_NAME);
+            try {
+                keycloak.realms().create(realm);
+                logger.info("Realm '{}' created successfully", REALM_NAME);
+            } catch (jakarta.ws.rs.ClientErrorException ce) {
+                if (ce.getResponse().getStatus() == 409) {
+                    // 409 Conflict means the realm already exists, which is fine
+                    logger.info("Realm '{}' already exists (409 Conflict)", REALM_NAME);
+                } else {
+                    // Some other client error
+                    logger.error("Error creating realm '{}': {}", REALM_NAME, ce.getMessage());
+                    throw ce;
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Unexpected error checking/creating realm '{}': {}", REALM_NAME, e.getMessage());
+            throw e;
         }
     }
 

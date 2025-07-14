@@ -39,3 +39,20 @@ application:
       expiration: 86400000  # 24 hours
       refresh-token:
         expiration: 604800000  # 7 days
+
+# Actuator configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+  health:
+    defaults:
+      enabled: true
+
+
