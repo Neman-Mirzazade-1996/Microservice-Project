@@ -1,207 +1,132 @@
-# Microservices Application
+# Mikroservis Arxitekturalı Tətbiq
 
-A modern microservices architecture built with Spring Boot, showcasing service orchestration, load balancing, and containerization.
+[![Java](https://img.shields.io/badge/Java-21-blue.svg)](https://www.java.com)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-brightgreen.svg)](https://spring.io/projects/spring-boot)
+[![Docker](https://img.shields.io/badge/Docker-Powered-blue.svg)](https://www.docker.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## 📋 Table of Contents
-- [Architecture Overview](#architecture-overview)
-- [Technology Stack](#technology-stack)
-- [Project Structure](#project-structure)
-- [Prerequisites](#prerequisites)
-- [Getting Started](#getting-started)
-- [Service Details](#service-details)
-- [API Documentation](#api-documentation)
-- [Configuration](#configuration)
-- [Monitoring & Health](#monitoring--health)
-- [Troubleshooting](#troubleshooting)
+Spring Boot, Docker və Keycloak ilə qurulmuş, təhlükəsiz və müasir mikroservis arxitekturası.
 
-## 🏗 Architecture Overview
+## 🏗️ Arxitektura Sxemi
 
-This project implements a microservices architecture with three core services:
+```mermaid
+graph LR
+    classDef edge fill:#e6f2ff,stroke:#369,stroke-width:2px;
+    classDef service fill:#d5f5e3,stroke:#27ae60,stroke-width:2px;
+    classDef security fill:#fff0b3,stroke:#f39c12,stroke-width:2px;
 
-- **User Service** (Port: 4020) - Manages user data and authentication
-- **Product Service** (Port: 4010) - Handles product catalog and inventory
-- **Order Service** (Port: 4030) - Processes orders and orchestrates service communication
+    User([İstifadəçi]) --> Nginx(Nginx);
 
-### Key Features
+    subgraph Giriş Qatı
+        Nginx --> Gateway{Spring Cloud Gateway};
+    end
 
-- **Load Balancing**: Nginx reverse proxy for intelligent request distribution
-- **Service Discovery**: Docker DNS-based service resolution
-- **Database per Service**: Independent MySQL instance for each service
-- **Resilient Communication**: Feign clients with circuit breaking
-- **Containerization**: Docker-based deployment
-- **Health Monitoring**: Actuator endpoints for service health
+    subgraph Təhlükəsizlik
+        Keycloak(Keycloak);
+    end
 
-## 💻 Technology Stack
+    subgraph Biznes Servisləri
+        UserService[User Service]
+        ProductService[Product Service]
+        OrderService[Order Service]
+    end
 
-- **Framework**: Spring Boot 3.x
-- **Java Version**: JDK 21
-- **Build Tool**: Gradle 8.x
-- **Database**: MySQL 8.0
-- **Service Communication**: Spring Cloud OpenFeign
-- **Load Balancer**: Nginx
-- **Containerization**: Docker & Docker Compose
-- **Documentation**: SpringDoc OpenAPI 3.0
-- **Monitoring**: Spring Boot Actuator
+    Gateway <--> Keycloak;
+    Gateway --> UserService;
+    Gateway --> ProductService;
+    Gateway --> OrderService;
+    
+    OrderService --> UserService;
+    OrderService --> ProductService;
 
-## 📂 Project Structure
-
-\`\`\`
-microservice-app-main/
-├── user-ms/               # User management service
-│   ├── src/              # Service source code
-│   ├── docker/           # Docker configuration
-│   └── build.gradle      # Service build config
-├── product-ms/           # Product catalog service
-│   ├── src/
-│   ├── docker/
-│   └── build.gradle
-├── order-ms/             # Order processing service
-│   ├── src/
-│   ├── docker/
-│   └── build.gradle
-├── nginx/                # Load balancer configuration
-│   └── nginx.conf       # Nginx routing rules
-├── docker-compose.yml    # Service orchestration
-└── build.gradle         # Root build configuration
-\`\`\`
-
-## 🔧 Prerequisites
-
-- JDK 21
-- Docker & Docker Compose
-- Gradle 8.x
-- MySQL 8.0 (for local development)
-
-## 🚀 Getting Started
-
-1. **Clone the Repository**
-   \`\`\`bash
-   git clone <repository-url>
-   cd microservice-app-main
-   \`\`\`
-
-2. **Build Services**
-   \`\`\`bash
-   ./gradlew clean build
-   \`\`\`
-
-3. **Start Infrastructure**
-   \`\`\`bash
-   docker-compose up --build
-   \`\`\`
-
-4. **Verify Services**
-   ```bash
-   curl http://localhost/health/user
-   curl http://localhost/health/product
-   curl http://localhost/health/order
-   ```
-
-## 🔍 Service Details
-
-### User Service
-- **Port**: 4020
-- **Base URL**: /api/v1/users
-- **Database**: user_db
-- **Key Functions**: User management, authentication
-
-### Product Service
-- **Port**: 4010
-- **Base URL**: /api/v1/products
-- **Database**: product_db
-- **Key Functions**: Product catalog, inventory management
-
-### Order Service
-- **Port**: 4030
-- **Base URL**: /api/v1/orders
-- **Database**: order_db
-- **Key Functions**: Order processing, service orchestration
-
-## 📚 API Documentation
-
-### User Service Endpoints
-- `POST /api/v1/users/createUser` - Create new user
-- `GET /api/v1/users/getUser/{id}` - Get user details
-- `GET /api/v1/users/health` - Service health check
-
-### Product Service Endpoints
-- `POST /api/v1/products/create` - Create product
-- `GET /api/v1/products/get/{id}` - Get product details
-- `PUT /api/v1/products/decreaseStock/{productId}/{quantity}` - Update stock
-- `GET /api/v1/products/health` - Service health check
-
-### Order Service Endpoints
-- `POST /api/v1/orders/create` - Create order
-- `GET /api/v1/orders/getOrderById/{id}` - Get order details
-- `GET /api/v1/orders/health` - Service health check
-
-## ⚙️ Configuration
-
-### Environment Variables
-```yaml
-# Database Configuration
-DB_CONNECTION_IP: localhost
-DB_CONNECTION_PORT: 3306
-DB_CONNECTION_USERNAME: user
-DB_CONNECTION_PASSWORD: password
-
-# Service URLs
-GATEWAY_HOST: http://nginx
+    class Nginx,Gateway edge;
+    class UserService,ProductService,OrderService service;
+    class Keycloak security;
 ```
 
-### Nginx Configuration
-```nginx
-upstream user_service {
-    server user-service-1:4020;
-    server user-service-2:4020;
-}
-# Similar configuration for product and order services
-```
+## 🚀 Sürətli Başlanğıc (Quick Start)
 
-## 📊 Monitoring & Health
+Layihəni 3 addıma işə salın.
 
-### Health Check Endpoints
-- User Service: http://localhost/health/user
-- Product Service: http://localhost/health/product
-- Order Service: http://localhost/health/order
+**Tələblər:** Docker və Java (JDK 21) qurulmalıdır.
 
-### Scaling Services
+1.  **Layihəni klonlayın:**
+    ```bash
+    git clone <repository-url>
+    cd microservice-app-main
+    ```
+
+2.  **Layihəni build edin:**
+    ```bash
+    ./gradlew build
+    ```
+
+3.  **Docker ilə başladın:**
+    ```bash
+    docker-compose up --build -d
+    ```
+
+Sistem bir neçə dəqiqəyə hazır olacaq. `docker-compose ps` ilə servislərin statusunu yoxlayın.
+
+## 🔑 Əsas Ünvanlar
+
+| Xidmət                  | Ünvan                                                 |
+| ----------------------- | ----------------------------------------------------- |
+| **Keycloak Admin**      | `http://localhost:8080` (admin / admin)               |
+| **User Service API**    | `http://localhost/user-service/swagger-ui/index.html`   |
+| **Product Service API** | `http://localhost/product-service/swagger-ui/index.html`|
+| **Order Service API**   | `http://localhost/order-service/swagger-ui/index.html`  |
+
+---
+
+<details>
+<summary>📖 Daha Ətraflı Məlumat (Texniki Detallar)</summary>
+
+### ⚙️ API İstifadə Nümunələri (Workflow)
+
+**1. Autentifikasiya (JWT Token almaq):**
 ```bash
-docker-compose up --scale user-service=2 --scale product-service=2 --scale order-service=2
+# ADMIN istifadəçisi ilə token alırıq
+TOKEN=$(curl -s -X POST http://localhost/user-service/api/v1/auth/login \
+-H "Content-Type: application/json" \
+-d '{"username": "admin@example.com", "password": "admin123"}' | jq -r .access_token)
 ```
 
-## 🔧 Troubleshooting
+**2. Qorunan Endpoint-ə müraciət (Məhsulları siyahılamaq):**
+```bash
+curl -X GET http://localhost/product-service/api/v1/products \
+-H "Authorization: Bearer $TOKEN"
+```
 
-### Common Issues
+### 🧪 Testlərin İcra Edilməsi
 
-1. **Service Connection Failures**
-   - Check service health endpoints
-   - Verify nginx configuration
-   - Ensure services are on the same Docker network
+**Bütün testləri icra etmək:**
+```bash
+./gradlew test
+```
 
-2. **Database Connection Issues**
-   - Verify database credentials
-   - Check database container status
-   - Ensure database initialization completed
+**Müəyyən bir servis üçün testləri icra etmək:**
+```bash
+./gradlew :order-ms:test
+```
 
-3. **Load Balancing Problems**
-   - Check nginx logs: `docker-compose logs nginx`
-   - Verify service discovery
-   - Check service registration
+### 💻 Texnologiya Steki
 
-### Debugging Tips
-- Use `docker-compose logs <service-name>` for service logs
-- Check application logs in `/var/log/`
-- Verify network connectivity between services
+- **Backend:** Java 21, Spring Boot 3.x, Spring Cloud
+- **Təhlükəsizlik:** Keycloak, Spring Security (OAuth2/JWT)
+- **Verilənlər Bazası:** MySQL 8.0
+- **API Gateway:** Spring Cloud Gateway
+- **Konteynerləşdirmə:** Docker, Docker Compose
+- **API Sənədləşdirmə:** SpringDoc OpenAPI 3
 
-## 🤝 Contributing
+### 🛠️ Nasazlıqların Aradan Qaldırılması
 
-1. Fork the repository
-2. Create a feature branch
-3. Commit changes
-4. Push to the branch
-5. Create a Pull Request
+- **Servis işə düşmürsə:** `docker-compose logs <service-name>` ilə loqlara baxın.
+- **401 Unauthorized xətası:** JWT tokenin `Authorization` başlığına düzgün əlavə edildiyindən əmin olun.
 
-## 📄 License
+</details>
 
-This project is licensed under the MIT License.
+## 📄 Lisenziya
+
+Bu layihə MIT Lisenziyası altında lisenziyalaşdırılıb. Ətraflı məlumat üçün `LICENSE` faylına baxın.
+
