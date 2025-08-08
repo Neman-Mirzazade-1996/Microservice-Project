@@ -354,11 +354,10 @@ services:
         max_attempts: 10
         window: 300s
     environment:
-      KEYCLOAK_AUTH_SERVER_URL: http://my-keycloak:8080
+      KEYCLOAK_AUTH_SERVER_URL: http://localhost:8080
       KEYCLOAK_ADMIN_USERNAME: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
-    networks:
-      - app-network
+    network_mode: host
 
 
 volumes:
