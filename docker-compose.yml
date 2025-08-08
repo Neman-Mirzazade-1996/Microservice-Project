@@ -331,11 +331,11 @@ services:
       postgres:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "echo > /dev/tcp/localhost/8080"]
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || curl -f http://localhost:8080/ || exit 1"]
       interval: 30s
       timeout: 15s
-      retries: 5
-      start_period: 60s
+      retries: 10
+      start_period: 90s
 
   keycloak-setup:
     image: keycloak/keycloak-setup:latest
@@ -343,21 +343,22 @@ services:
     build:
       context: ./key-cloak/docker
       dockerfile: Dockerfile
-    entrypoint: ["/bin/sh","-c","sleep 30 && /entrypoint.sh"]
+    entrypoint: ["/bin/sh","-c","sleep 90 && /entrypoint.sh"]
     depends_on:
       my-keycloak:
         condition: service_healthy
     deploy:
       restart_policy:
         condition: on-failure
-        delay: 15s
+        delay: 30s
         max_attempts: 10
         window: 300s
     environment:
-      KEYCLOAK_AUTH_SERVER_URL: http://localhost:8080
+      KEYCLOAK_AUTH_SERVER_URL: http://my-keycloak:8080
       KEYCLOAK_ADMIN_USERNAME: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
-    network_mode: host
+    networks:
+      - app-network
 
 
 volumes:

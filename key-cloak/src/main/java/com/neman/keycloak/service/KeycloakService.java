@@ -40,6 +40,12 @@ public class KeycloakService {
         logger.info("Keycloak Server URL: {}", keycloakServerUrl);
         logger.info("Admin Username: {}", adminUsername);
 
+        // Wait for Keycloak to be fully ready
+        if (!waitForKeycloakToBeReady()) {
+            logger.error("Keycloak is not ready after waiting. Skipping initialization.");
+            return;
+        }
+
         try {
             // Step 1: Initialize Keycloak admin client
             logger.info("Step 1: Creating Keycloak admin client connection...");
@@ -101,6 +107,50 @@ public class KeycloakService {
         } finally {
             logger.info("=== Keycloak Service Initialization Process Finished ===");
         }
+    }
+
+    private boolean waitForKeycloakToBeReady() {
+        logger.info("Waiting for Keycloak to be ready...");
+        int maxAttempts = 30; // 5 minutes with 10-second intervals
+        int attempt = 0;
+        
+        while (attempt < maxAttempts) {
+            try {
+                logger.info("Attempt {}/{} - Testing Keycloak readiness at: {}", attempt + 1, maxAttempts, keycloakServerUrl);
+                
+                // Try to create a temporary Keycloak client and test server info
+                Keycloak testClient = KeycloakBuilder.builder()
+                        .serverUrl(keycloakServerUrl)
+                        .realm("master")
+                        .username(adminUsername)
+                        .password(adminPassword)
+                        .clientId("admin-cli")
+                        .build();
+                
+                // Try to get server info - this will throw an exception if not ready
+                testClient.serverInfo().getInfo();
+                logger.info("✓ Keycloak is ready and responding!");
+                return true;
+                
+            } catch (Exception e) {
+                attempt++;
+                logger.warn("✗ Attempt {}/{} failed: {}", attempt, maxAttempts, e.getMessage());
+                
+                if (attempt < maxAttempts) {
+                    try {
+                        logger.info("Waiting 10 seconds before next attempt...");
+                        Thread.sleep(10000); // Wait 10 seconds
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        logger.error("Wait interrupted");
+                        return false;
+                    }
+                }
+            }
+        }
+        
+        logger.error("Keycloak is not ready after {} attempts. Giving up.", maxAttempts);
+        return false;
     }
 
     private void setupKeycloakRealm() {
