@@ -1,9 +1,6 @@
 #!/bin/sh
 set -e
 echo "Waiting for Keycloak..."
-until curl -fsS http://my-keycloak:8080/health/ready; do
-  echo "Keycloak not ready yet — sleeping 5s"
-  sleep 5
-done
-echo "Keycloak ready — starting setup"
+sleep 30
+echo "Starting Keycloak setup"
 exec java -jar /app/key-cloak.jar

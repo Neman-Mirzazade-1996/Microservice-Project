@@ -78,7 +78,7 @@ services:
       DB_CONNECTION_PORT: 3306
       DB_CONNECTION_USERNAME: user
       DB_CONNECTION_PASSWORD: password
-      KEYCLOAK_AUTH_SERVER_URL: http://localhost:8080
+      KEYCLOAK_AUTH_SERVER_URL: http://my-keycloak:8080
       KEYCLOAK_REALM: microservice-realm
       KEYCLOAK_CLIENT_ID: microservice-client
       KEYCLOAK_ADMIN_USERNAME: admin
@@ -111,7 +111,7 @@ services:
       DB_CONNECTION_PORT: 3306
       DB_CONNECTION_USERNAME: user
       DB_CONNECTION_PASSWORD: password
-      KEYCLOAK_AUTH_SERVER_URL: http://localhost:8080
+      KEYCLOAK_AUTH_SERVER_URL: http://my-keycloak:8080
       KEYCLOAK_REALM: microservice-realm
       KEYCLOAK_CLIENT_ID: microservice-client
       KEYCLOAK_ADMIN_USERNAME: admin
@@ -331,11 +331,11 @@ services:
       postgres:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8080/health/ready || exit 1"]
+      test: ["CMD-SHELL", "echo > /dev/tcp/localhost/8080"]
       interval: 30s
       timeout: 15s
-      retries: 10
-      start_period: 300s
+      retries: 5
+      start_period: 60s
 
   keycloak-setup:
     image: keycloak/keycloak-setup:latest
@@ -354,11 +354,10 @@ services:
         max_attempts: 10
         window: 300s
     environment:
-      KEYCLOAK_AUTH_SERVER_URL: http://my-keycloak:8080
+      KEYCLOAK_AUTH_SERVER_URL: http://localhost:8080
       KEYCLOAK_ADMIN_USERNAME: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
-    networks:
-      - app-network
+    network_mode: host
 
 
 volumes:
