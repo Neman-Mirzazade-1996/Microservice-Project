@@ -36,23 +36,70 @@ public class KeycloakService {
 
     @PostConstruct
     public void init() {
+        logger.info("=== Keycloak Service Initialization Started ===");
+        logger.info("Keycloak Server URL: {}", keycloakServerUrl);
+        logger.info("Admin Username: {}", adminUsername);
+
         try {
-            logger.info("Initializing Keycloak admin client with URL: {}", keycloakServerUrl);
+            // Step 1: Initialize Keycloak admin client
+            logger.info("Step 1: Creating Keycloak admin client connection...");
             keycloak = KeycloakBuilder.builder()
                     .serverUrl(keycloakServerUrl)
-                    .realm("master")
+                    .realm("master") // Düzəltdim: master123 -> master
                     .username(adminUsername)
                     .password(adminPassword)
                     .clientId("admin-cli")
                     .build();
             
-            // Setup realm and client
+            logger.info("Step 1: Keycloak admin client created successfully");
+
+            // Step 2: Test connection by getting server info
+            logger.info("Step 2: Testing connection to Keycloak server...");
+            keycloak.serverInfo().getInfo(); // Bu, connection-u test edir
+            logger.info("Step 2: Connection to Keycloak server successful");
+
+            // Step 3: Setup realm and client
+            logger.info("Step 3: Starting realm and client setup...");
             setupKeycloakRealm();
-            logger.info("Keycloak setup completed successfully");
+            logger.info("Step 3: Realm and client setup completed");
+
+            logger.info("=== Keycloak Service Initialization Completed Successfully ===");
+
+        } catch (jakarta.ws.rs.ProcessingException e) {
+            logger.error("=== CONNECTION ERROR ===");
+            logger.error("Failed to connect to Keycloak server at: {}", keycloakServerUrl);
+            logger.error("Error details: {}", e.getMessage());
+            logger.error("Possible causes:");
+            logger.error("1. Keycloak server is not running");
+            logger.error("2. Wrong server URL: {}", keycloakServerUrl);
+            logger.error("3. Network connectivity issues");
+            logger.error("Please check if Keycloak is running at: {}", keycloakServerUrl);
+
+        } catch (jakarta.ws.rs.NotAuthorizedException e) {
+            logger.error("=== AUTHENTICATION ERROR ===");
+            logger.error("Failed to authenticate with Keycloak server");
+            logger.error("Admin Username: {}", adminUsername);
+            logger.error("Error details: {}", e.getMessage());
+            logger.error("Possible causes:");
+            logger.error("1. Wrong admin username: {}", adminUsername);
+            logger.error("2. Wrong admin password");
+            logger.error("3. Admin user does not exist in master realm");
+
+        } catch (jakarta.ws.rs.NotFoundException e) {
+            logger.error("=== REALM NOT FOUND ERROR ===");
+            logger.error("Master realm not found or inaccessible");
+            logger.error("Error details: {}", e.getMessage());
+            logger.error("This usually means Keycloak is not properly initialized");
+
         } catch (Exception e) {
-            logger.error("Failed to initialize Keycloak: {}", e.getMessage(), e);
-            // Continue execution even if Keycloak setup fails
-            logger.info("Keycloak setup completed successfully");
+            logger.error("=== UNEXPECTED ERROR ===");
+            logger.error("An unexpected error occurred during Keycloak initialization");
+            logger.error("Error type: {}", e.getClass().getSimpleName());
+            logger.error("Error message: {}", e.getMessage());
+            logger.error("Full stack trace:", e);
+
+        } finally {
+            logger.info("=== Keycloak Service Initialization Process Finished ===");
         }
     }
 
