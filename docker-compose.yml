@@ -307,6 +307,7 @@ services:
   my-keycloak:
     image: quay.io/keycloak/keycloak:latest
     container_name: my-keycloak
+    hostname: my-keycloak
     environment:
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
@@ -331,7 +332,7 @@ services:
       postgres:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || curl -f http://localhost:8080/ || exit 1"]
+      test: ["CMD-SHELL", "echo > /dev/tcp/localhost/8080"]
       interval: 30s
       timeout: 15s
       retries: 10
@@ -340,6 +341,7 @@ services:
   keycloak-setup:
     image: keycloak/keycloak-setup:latest
     container_name: keycloak-setup
+    hostname: keycloak-setup
     build:
       context: ./key-cloak/docker
       dockerfile: Dockerfile
