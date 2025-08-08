@@ -20,7 +20,7 @@ import java.util.List;
 public class KeycloakService {
     private static final Logger logger = LoggerFactory.getLogger(KeycloakService.class);
 
-    @Value("${keycloak.auth-server-url:http://localhost:8080}")
+    @Value("${keycloak.auth-server-url:http://my-keycloak:8080}")
     private String keycloakServerUrl;
 
     @Value("${keycloak.admin.username:admin}")

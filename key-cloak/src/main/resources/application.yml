@@ -8,8 +8,8 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8080/realms/microservices-realm
-          jwk-set-uri: http://localhost:8080/realms/microservices-realm/protocol/openid-connect/certs
+          issuer-uri: http://my-keycloak:8080/realms/microservice-realm
+          jwk-set-uri: http://my-keycloak:8080/realms/microservice-realm/protocol/openid-connect/certs
 
 server:
   servlet:
@@ -17,8 +17,8 @@ server:
   port: 8090
 
 keycloak:
-  realm: microservices-realm
-  auth-server-url: http://localhost:8080
-  resource: microservices-app
-  public-client: false
-  bearer-only: true
+  realm: microservice-realm
+  auth-server-url: http://my-keycloak:8080
+  resource: microservice-client
+  public-client: true
+  bearer-only: false
