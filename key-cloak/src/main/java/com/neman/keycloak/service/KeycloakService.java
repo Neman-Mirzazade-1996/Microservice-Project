@@ -111,10 +111,11 @@ public class KeycloakService {
     private void createClientIfNotExists() {
         RealmResource realm = keycloak.realm(REALM_NAME);
         
-        try {
-            realm.clients().findByClientId(CLIENT_ID);
-            logger.info("Client '{}' already exists", CLIENT_ID);
-        } catch (Exception e) {
+        // Client-in mövcud olub-olmadığını yoxlamaq üçün ID ilə axtarış edirik
+        List<ClientRepresentation> clients = realm.clients().findByClientId(CLIENT_ID);
+
+        // Əgər qayıdan siyahı boşdursa, bu o deməkdir ki, client mövcud deyil
+        if (clients.isEmpty()) {
             logger.info("Creating client '{}'", CLIENT_ID);
             
             ClientRepresentation client = new ClientRepresentation();
@@ -132,6 +133,9 @@ public class KeycloakService {
             
             realm.clients().create(client);
             logger.info("Client '{}' created successfully", CLIENT_ID);
+        } else {
+            // Əgər siyahı boş deyilsə, deməli client artıq mövcuddur
+            logger.info("Client '{}' already exists", CLIENT_ID);
         }
     }
 

@@ -36,9 +36,15 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="key-cloak" target="21" />
+      <module name="key-cloak.main" target="21" />
+      <module name="key-cloak.test" target="21" />
       <module name="MicroserviceProject.inventory-ms" target="21" />
       <module name="MicroserviceProject.inventory-ms.main" target="21" />
       <module name="MicroserviceProject.inventory-ms.test" target="21" />
+      <module name="spring-cloud" target="21" />
+      <module name="spring-cloud.main" target="21" />
+      <module name="spring-cloud.test" target="21" />
     </bytecodeTargetLevel>
   </component>
 </project>
