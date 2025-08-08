@@ -18,7 +18,10 @@ server:
 
 keycloak:
   realm: microservice-realm
-  auth-server-url: http://my-keycloak:8080
+  auth-server-url: ${KEYCLOAK_AUTH_SERVER_URL:http://my-keycloak:8080}
   resource: microservice-client
   public-client: true
   bearer-only: false
+  admin:
+    username: ${KEYCLOAK_ADMIN_USERNAME:admin}
+    password: ${KEYCLOAK_ADMIN_PASSWORD:admin}
