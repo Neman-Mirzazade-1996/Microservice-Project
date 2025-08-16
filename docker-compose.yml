@@ -78,11 +78,6 @@ services:
       DB_CONNECTION_PORT: 3306
       DB_CONNECTION_USERNAME: user
       DB_CONNECTION_PASSWORD: password
-      KEYCLOAK_AUTH_SERVER_URL: http://localhost:8080
-      KEYCLOAK_REALM: microservice-realm
-      KEYCLOAK_CLIENT_ID: microservice-client
-      KEYCLOAK_ADMIN_USERNAME: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
     networks:
       - app-network
     healthcheck:
@@ -111,11 +106,6 @@ services:
       DB_CONNECTION_PORT: 3306
       DB_CONNECTION_USERNAME: user
       DB_CONNECTION_PASSWORD: password
-      KEYCLOAK_AUTH_SERVER_URL: http://localhost:8080
-      KEYCLOAK_REALM: microservice-realm
-      KEYCLOAK_CLIENT_ID: microservice-client
-      KEYCLOAK_ADMIN_USERNAME: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
     networks:
       - app-network
     healthcheck:
@@ -248,9 +238,6 @@ services:
         condition: service_healthy
       order-service-1:
         condition: service_healthy
-    environment:
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://my-keycloak:8080/realms/microservice-realm
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://my-keycloak:8080/realms/microservice-realm/protocol/openid-connect/certs
     networks:
       - app-network
     healthcheck:
@@ -305,60 +292,29 @@ services:
 
 
   my-keycloak:
-    image: quay.io/keycloak/keycloak:latest
-    container_name: my-keycloak
+    image: quay.io/keycloak/keycloak:24.0
     environment:
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
       KC_DB_USERNAME: keycloak
       KC_DB_PASSWORD: password
       KC_HOSTNAME: localhost
-      KC_HTTP_ENABLED: "true"
-      KC_PROXY: edge
+      KC_HOSTNAME_STRICT: false
+      KC_HOSTNAME_STRICT_HTTPS: false
+      KC_HTTP_ENABLED: true
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
-      KC_HEALTH_ENABLED: "true"
-      KC_METRICS_ENABLED: "true"
-      JAVA_OPTS: "-Xms512m -Xmx1024m"
+      KC_HTTP_RELATIVE_PATH: /auth
+      KC_HEALTH_ENABLED: true
     command:
-      - start
+      - start-dev
     ports:
-      - "8080:8080"
-      - "8443:8443"
+      - "8180:8080"
     networks:
       - app-network
     depends_on:
       postgres:
         condition: service_healthy
-    healthcheck:
-      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8080/health/ready || exit 1"]
-      interval: 30s
-      timeout: 15s
-      retries: 10
-      start_period: 300s
-
-  keycloak-setup:
-    image: keycloak/keycloak-setup:latest
-    container_name: keycloak-setup
-    build:
-      context: ./key-cloak/docker
-      dockerfile: Dockerfile
-    entrypoint: ["/bin/sh","-c","sleep 30 && /entrypoint.sh"]
-    depends_on:
-      my-keycloak:
-        condition: service_healthy
-    deploy:
-      restart_policy:
-        condition: on-failure
-        delay: 15s
-        max_attempts: 10
-        window: 300s
-    environment:
-      KEYCLOAK_AUTH_SERVER_URL: http://my-keycloak:8080
-      KEYCLOAK_ADMIN_USERNAME: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
-    networks:
-      - app-network
 
 
 volumes:

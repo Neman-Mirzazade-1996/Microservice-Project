@@ -26,4 +26,6 @@ public class UserResponseDto {
     String profilePicture;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
+
+
 }

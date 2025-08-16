@@ -11,7 +11,6 @@ import com.neman.userms.Service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service
 @RequiredArgsConstructor
@@ -19,7 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserResponseDto createUser(UserRequestDto userRequestDto) {
@@ -38,7 +36,7 @@ public class UserServiceImpl implements UserService {
                 .lastName(userRequestDto.getLastName())
                 .email(userRequestDto.getEmail())
                 .username(userRequestDto.getUsername())
-                .password(passwordEncoder.encode(userRequestDto.getPassword()))
+                .password(userRequestDto.getPassword()) // Artıq encode etmirik - spring-cloud-da həyata keçiriləcək
                 .phone(userRequestDto.getPhone())
                 .address(userRequestDto.getAddress())
                 .city(userRequestDto.getCity())
@@ -57,4 +55,11 @@ public class UserServiceImpl implements UserService {
         return userMapper.toResponseDto(user);
     }
 
+
+
+    @Override
+    public User findUserEntityByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+    }
 }

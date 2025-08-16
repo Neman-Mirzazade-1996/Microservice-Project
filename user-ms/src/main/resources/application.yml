@@ -18,27 +18,14 @@ spring:
       hibernate:
         format_sql: true
 
-# Keycloak configuration
-keycloak:
-  auth-server-url: http://my-keycloak:8080
-  realm: microservice-realm
-  client-id: microservice-client
-  admin:
-    username: admin
-    password: admin
+
 
 logging:
   level:
     org.springframework.security: DEBUG
     com.neman.userms: DEBUG
 
-application:
-  security:
-    jwt:
-      secret-key: 92847365102938475610293847561029384756102938475610293847561029384756
-      expiration: 86400000  # 24 hours
-      refresh-token:
-        expiration: 604800000  # 7 days
+
 
 # Actuator configuration
 management:

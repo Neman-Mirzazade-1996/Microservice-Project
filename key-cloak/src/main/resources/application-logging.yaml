@@ -1,0 +1,12 @@
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: INFO
+        type:
+          descriptor:
+            sql:
+              BasicBinder: INFO
+
+    root: info
+
