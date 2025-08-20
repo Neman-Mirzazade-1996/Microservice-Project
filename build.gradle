@@ -76,6 +76,7 @@ configure(javaProjects){
         dependsOn assemble, createDockerDir
         from("$projectDir/build/libs") {
             include "*.jar"
+            exclude "*-plain.jar"
         }
         into dockerDir
         rename { fileName ->

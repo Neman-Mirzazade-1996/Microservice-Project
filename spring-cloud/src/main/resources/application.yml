@@ -1,6 +1,44 @@
 spring:
   main:
     web-application-type: reactive
+  
+  # Spring Cloud Gateway routes
+  cloud:
+    gateway:
+      routes:
+        # User service routes
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/v1/users/**
+          filters:
+            - StripPrefix=0
+            
+        # Product service routes  
+        - id: product-service
+          uri: lb://product-service
+          predicates:
+            - Path=/api/v1/products/**
+          filters:
+            - StripPrefix=0
+            
+        # Order service routes
+        - id: order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/api/v1/orders/**
+          filters:
+            - StripPrefix=0
+            
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+          
+  # Load balancing configuration
+  loadbalancer:
+    enabled: true
+    
   security:
     oauth2:
       client:
@@ -36,6 +74,22 @@ spring:
 server:
   port: 8085
 
+# Service discovery for load balancing
+# Static service locations since we're not using Eureka
+microservices:
+  user-service:
+    instances:
+      - http://user-service-1:4020
+      - http://user-service-2:4020
+  product-service:
+    instances:
+      - http://product-service-1:4010
+      - http://product-service-2:4010
+  order-service:
+    instances:
+      - http://order-service-1:4030
+      - http://order-service-2:4030
+
 # JWT konfiqurasiyaları - Keycloak ilə istifadə üçün
 application:
   security:
@@ -57,3 +111,4 @@ logging:
   level:
     com.neman.springcloud: DEBUG
     org.springframework.security: DEBUG
+    org.springframework.cloud.gateway: DEBUG

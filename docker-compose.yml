@@ -72,7 +72,7 @@ services:
       user-db:
         condition: service_healthy
       my-keycloak:
-        condition: service_healthy
+        condition: service_started
     environment:
       DB_CONNECTION_IP: user-db
       DB_CONNECTION_PORT: 3306
@@ -100,7 +100,7 @@ services:
       user-db:
         condition: service_healthy
       my-keycloak:
-        condition: service_healthy
+        condition: service_started
     environment:
       DB_CONNECTION_IP: user-db
       DB_CONNECTION_PORT: 3306
@@ -231,7 +231,7 @@ services:
       - "8085:8085"
     depends_on:
       my-keycloak:
-        condition: service_healthy
+        condition: service_started
       user-service-1:
         condition: service_healthy
       product-service-1:
@@ -310,8 +310,9 @@ services:
       KC_LOG_LEVEL: INFO
       KC_PROXY_HEADERS: xforwarded
       KC_PROXY_ADDRESS_FORWARDING: false
-      KC_CACHE_STACK: tcp
-      KC_CACHE_CONFIG_FILE: cache-ispn.xml
+      # Disable clustering to avoid multicast issues
+      KC_CACHE: local
+      KC_CACHE_STACK: 
     command:
       - start-dev
     ports:
@@ -321,12 +322,6 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8080/auth/health/ready || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
 
 
 volumes:
