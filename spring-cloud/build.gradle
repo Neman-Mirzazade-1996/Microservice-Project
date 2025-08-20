@@ -38,24 +38,23 @@ dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-starter'
 	implementation 'org.springframework.cloud:spring-cloud-commons'
 
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
+	// Temporarily remove OAuth2 dependencies until Keycloak is properly configured
+	// implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+	// implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+	// implementation 'org.springframework.boot:spring-boot-starter-security'
+	// implementation 'org.springframework.boot:spring-boot-starter-oauth2-authorization-server'
 
-	// OAuth2 authorization server for better Keycloak integration
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-authorization-server'
-
-	// JWT dependency-ləri (authentication üçün)
-	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
-	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
-	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+	// JWT dependency-ləri (authentication üçün) - temporarily disabled
+	// implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	// runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	// runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
 	// Reactive data access (JPA əvəzinə)
 	implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
 	runtimeOnly 'io.r2dbc:r2dbc-h2'
 
-	// Security
-	implementation 'org.springframework.security:spring-security-crypto'
+	// Security - basic only
+	// implementation 'org.springframework.security:spring-security-crypto'
 
 	// Lombok
 	compileOnly 'org.projectlombok:lombok'
