@@ -704,4 +704,3 @@ docker-compose logs spring-cloud | grep "GET\|POST" | awk '{print $7}' | sort | 
 docker-compose logs spring-cloud | grep "response time" | awk '{sum+=$NF; count++} END {print "Average response time: " sum/count " ms"}'
 ```
 
-Bu yenilənmiş README.md artıq YAML konfiqurasiya nümunələri olmadan, proyektin necə işlədiyini praktik və ətraflı şəkildə izah edir. Hər bir komponent, onun məsuliyyətləri, digər komponentlər ilə əlaqəsi və real istifadə ssenariləri aydın şəkildə göstərilir.

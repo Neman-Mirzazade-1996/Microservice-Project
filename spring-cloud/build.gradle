@@ -24,39 +24,38 @@ ext {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
-	implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
-
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
+
+	// OAuth2 authorization server for better Keycloak integration
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-authorization-server'
 
 	// JWT dependency-ləri (authentication üçün)
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
-	// User service ilə əlaqə üçün
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	// Reactive data access (JPA əvəzinə)
+	implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
+	runtimeOnly 'io.r2dbc:r2dbc-h2'
+
+	// Security
 	implementation 'org.springframework.security:spring-security-crypto'
 
 	// Lombok
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 
-	// Swagger/OpenAPI
+	// Swagger/OpenAPI for WebFlux
 	implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.5.0'
-
-	// Keycloak
-	implementation 'org.keycloak:keycloak-admin-client:24.0.0'
 
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.projectreactor:reactor-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
-	runtimeOnly 'com.h2database:h2'
-
 }
 
 dependencyManagement {

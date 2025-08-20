@@ -1,46 +1,42 @@
 spring:
+  main:
+    web-application-type: reactive
   security:
     oauth2:
       client:
         registration:
-          keycloak-oidc:
+          keycloak:
             client-id: demo
             client-secret: lFacC7i5yw2l0KwQoycx9WuJryxT0zUu
-            scope: openid,profile,email,demo
-            redirect-uri: http://localhost:8085/login/oauth2/code/demo
-            provider: keycloak-oidc
-            client-name: demo
+            scope: openid,profile,email
             authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+        provider:
+          keycloak:
+            issuer-uri: http://my-keycloak:8080/realms/demo-app
+            authorization-uri: http://my-keycloak:8080/realms/demo-app/protocol/openid-connect/auth
+            token-uri: http://my-keycloak:8080/realms/demo-app/protocol/openid-connect/token
+            user-info-uri: http://my-keycloak:8080/realms/demo-app/protocol/openid-connect/userinfo
+            jwk-set-uri: http://my-keycloak:8080/realms/demo-app/protocol/openid-connect/certs
+            user-name-attribute: preferred_username
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8080/auth/realms/demo-app
-          jwk-set-uri: http://localhost:8080/auth/realms/demo-app/protocol/openid-connect/certs
+          issuer-uri: http://my-keycloak:8080/realms/demo-app
+          jwk-set-uri: http://my-keycloak:8080/realms/demo-app/protocol/openid-connect/certs
 
-  cloud:
-    gateway:
-      routes:
-        # User service routes
-        - id: user-service
-          uri: http://user-service:4020
-          predicates:
-            - Path=/api/v1/users/**
-
-        # Product service routes
-        - id: product-service
-          uri: http://product-service:4010
-          predicates:
-            - Path=/api/v1/products/**
-
-        # Order service routes
-        - id: order-service
-          uri: http://order-service:4030
-          predicates:
-            - Path=/api/v1/orders/**
+  # R2DBC configuration for reactive database access
+  r2dbc:
+    url: r2dbc:h2:mem:///auth-db
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
 
 server:
   port: 8085
 
-# JWT konfiqurasiyaları
+# JWT konfiqurasiyaları - Keycloak ilə istifadə üçün
 application:
   security:
     jwt:
@@ -49,23 +45,15 @@ application:
       refresh-token:
         expiration: 604800000 # 7 gün
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,env,gateway
-
-logging:
-  level:
-    root: INFO
-    org.springframework.cloud.gateway: DEBUG
-    org.springframework.security: DEBUG
-    org.springframework.web.reactive: DEBUG
-    reactor.netty: DEBUG
-    com.neman.springcloud: DEBUG
-
+# JWT converter konfiqurasiyaları
 jwt:
   auth:
     converter:
-      resource-id: demo
       principle-attribute: preferred_username
+      resource-id: demo
+
+# Logging konfiqurasiyası
+logging:
+  level:
+    com.neman.springcloud: DEBUG
+    org.springframework.security: DEBUG
