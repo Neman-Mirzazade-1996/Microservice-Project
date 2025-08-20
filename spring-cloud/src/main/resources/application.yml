@@ -1,28 +1,43 @@
 spring:
   main:
     web-application-type: reactive
-  security:
-    oauth2:
-      client:
-        registration:
-          keycloak:
-            client-id: demo
-            client-secret: lFacC7i5yw2l0KwQoycx9WuJryxT0zUu
-            scope: openid,profile,email
-            authorization-grant-type: authorization_code
-            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
-        provider:
-          keycloak:
-            issuer-uri: http://my-keycloak:8080/realms/demo-app
-            authorization-uri: http://my-keycloak:8080/realms/demo-app/protocol/openid-connect/auth
-            token-uri: http://my-keycloak:8080/realms/demo-app/protocol/openid-connect/token
-            user-info-uri: http://my-keycloak:8080/realms/demo-app/protocol/openid-connect/userinfo
-            jwk-set-uri: http://my-keycloak:8080/realms/demo-app/protocol/openid-connect/certs
-            user-name-attribute: preferred_username
-      resourceserver:
-        jwt:
-          issuer-uri: http://my-keycloak:8080/realms/demo-app
-          jwk-set-uri: http://my-keycloak:8080/realms/demo-app/protocol/openid-connect/certs
+  
+  # Spring Cloud Gateway routes
+  cloud:
+    gateway:
+      routes:
+        # User service routes
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/v1/users/**
+          filters:
+            - StripPrefix=0
+            
+        # Product service routes  
+        - id: product-service
+          uri: lb://product-service
+          predicates:
+            - Path=/api/v1/products/**
+          filters:
+            - StripPrefix=0
+            
+        # Order service routes
+        - id: order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/api/v1/orders/**
+          filters:
+            - StripPrefix=0
+            
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+          
+  # Load balancing configuration
+  loadbalancer:
+    enabled: true
 
   # R2DBC configuration for reactive database access
   r2dbc:
@@ -36,24 +51,24 @@ spring:
 server:
   port: 8085
 
-# JWT konfiqurasiyaları - Keycloak ilə istifadə üçün
-application:
-  security:
-    jwt:
-      secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
-      expiration: 3600000 # 1 saat
-      refresh-token:
-        expiration: 604800000 # 7 gün
-
-# JWT converter konfiqurasiyaları
-jwt:
-  auth:
-    converter:
-      principle-attribute: preferred_username
-      resource-id: demo
+# Service discovery for load balancing
+# Static service locations since we're not using Eureka
+microservices:
+  user-service:
+    instances:
+      - http://user-service-1:4020
+      - http://user-service-2:4020
+  product-service:
+    instances:
+      - http://product-service-1:4010
+      - http://product-service-2:4010
+  order-service:
+    instances:
+      - http://order-service-1:4030
+      - http://order-service-2:4030
 
 # Logging konfiqurasiyası
 logging:
   level:
     com.neman.springcloud: DEBUG
-    org.springframework.security: DEBUG
+    org.springframework.cloud.gateway: DEBUG
